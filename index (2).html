@@ -1,0 +1,503 @@
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MC Generator Pro</title>
+<style>
+:root{--bg:#f4f4f2;--pn:#fff;--tx:#1d1d1b;--mu:#6b6b66;--bd:#d8d8d2;--ac:#2f7d3a}
+@media(prefers-color-scheme:dark){:root{--bg:#161715;--pn:#20221f;--tx:#e8e8e3;--mu:#9a9a92;--bd:#34362f;--ac:#5fb86b}}
+*{box-sizing:border-box}body{margin:0;font:14px system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;min-height:100vh}
+aside{width:340px;flex:none;padding:12px;background:var(--pn);border-right:1px solid var(--bd);overflow:auto;height:100vh;position:sticky;top:0}
+main{flex:1;padding:12px;min-width:0}h1{font-size:17px;margin:0 0 8px}
+fieldset{border:1px solid var(--bd);border-radius:8px;margin:0 0 8px;padding:6px 10px}legend{font-size:12px;color:var(--mu);padding:0 4px}
+.r{display:grid;grid-template-columns:100px 1fr 40px;gap:6px;align-items:center;margin:3px 0}.r label{color:var(--mu)}.r b{font-weight:500;text-align:right}
+input[type=number],select,input[type=text]{width:100%;padding:5px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx)}
+input[type=range]{width:100%;accent-color:var(--ac)}.n3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.n3 label{font-size:12px;color:var(--mu)}
+.chk{display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:13px}#bio{max-height:190px;overflow:auto;grid-template-columns:1fr}
+button{padding:7px 11px;border:0;border-radius:6px;background:var(--ac);color:#fff;font-weight:600;cursor:pointer}button.s{background:var(--bd);color:var(--tx);padding:4px 8px;font-weight:500}
+#wrap{position:relative;height:62vh;border-radius:10px;overflow:hidden;background:linear-gradient(#5d8fd6,#bcd7f0 70%,#e6eef5)}
+#gl{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#ov{position:absolute;left:8px;top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}#ov label{background:#0007;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px}
+#hl{position:absolute;right:8px;bottom:6px;font-size:11px;color:#fff;text-shadow:0 0 3px #000}
+.box{background:var(--pn);border:1px solid var(--bd);border-radius:8px;padding:8px;margin-top:10px}.box h2{font-size:12px;color:var(--mu);font-weight:500;margin:0 0 6px}
+#side{width:100%;image-rendering:pixelated;display:block}#info{color:var(--mu);font-size:13px;margin-top:8px}.hide{display:none}
+@media(max-width:800px){body{flex-direction:column}aside{width:100%;height:auto;position:static}}
+</style></head><body>
+<aside>
+<h1>⛏ MC Generator Pro</h1>
+<fieldset><legend>Modus</legend><select id="mode"><option value="t">Terrain (frei)</option><option value="p">Plot-Terrain (Deich)</option><option value="b">Baum / Objekt</option></select></fieldset>
+<fieldset id="szf"><legend>Größe (Blöcke)</legend><div class="n3">
+<div><label>Länge (X)</label><input type="number" id="sx" value="120" min="1" max="4096"></div>
+<div><label>Breite (Z)</label><input type="number" id="sz" value="120" min="1" max="4096"></div>
+<div><label>Höhe (Y)</label><input type="number" id="sy" value="64" min="4" max="384"></div></div></fieldset>
+<fieldset id="pf" class="hide"><legend>Plot-Terrain: flache Mitte, Rand steigt an</legend>
+<div class="r"><label>Richtung</label><select id="pdir" style="grid-column:span 2"><option value="p">Plateau (außen flach → Plot oben)</option><option value="b">Becken (Plot unten → Rand hoch)</option></select></div>
+<div class="n3"><div><label>Plot-Länge (X)</label><input type="number" id="pw" value="64" min="4" max="2000"></div><div><label>Plot-Breite (Z)</label><input type="number" id="pl" value="64" min="4" max="2000"></div><div><label>Gesamtgröße</label><div id="ptot" style="padding:5px;color:var(--mu)"></div></div></div>
+<div id="rp"></div>
+<div class="r"><label>Profil</label><select id="ppf" style="grid-column:span 2"><option value="d">Deich (sanft)</option><option value="l">Linear</option><option value="s">Steile Klippe</option><option value="t">Terrassen</option><option value="g">Gebirge</option></select></div>
+<div class="r"><label>Form</label><select id="psh" style="grid-column:span 2"><option value="e">Eckig</option><option value="r">Runde Ecken</option><option value="o">Oval</option></select></div>
+<div class="chk" style="margin-top:4px"><label><input type="checkbox" id="po_n"> Norden offen</label><label><input type="checkbox" id="po_s"> Süden offen</label><label><input type="checkbox" id="po_w"> Westen offen</label><label><input type="checkbox" id="po_e"> Osten offen</label></div></fieldset>
+<fieldset><legend>Seed</legend><div style="display:flex;gap:6px"><input type="number" id="seed" value="1234"><button class="s" id="dice">🎲</button><button class="s" id="chaos">🌀 Chaos</button></div></fieldset>
+<fieldset><legend>Texturen (echte Minecraft-Blöcke)</legend>
+<div class="r"><label>Quelle</label><select id="tsrc" style="grid-column:span 2"><option value="gh">Auto: Minecraft-Assets (GitHub)</option><option value="file">Eigene JAR / Resource-Pack</option><option value="none">Keine (nur Farben)</option></select></div>
+<div class="r" id="tvr"><label>Version</label><select id="tver" style="grid-column:span 2"><option>1.21.10</option><option>1.21.4</option><option>1.20.4</option><option>1.19.4</option></select></div>
+<div class="r hide" id="tfr"><input type="file" id="tfile" accept=".jar,.zip" style="grid-column:span 3"></div>
+<div id="tst" style="font-size:12px;color:var(--mu)"></div></fieldset>
+<div id="tp">
+<fieldset><legend>Dimension &amp; Biome (mehrere = gemischt)</legend>
+<select id="dim"><option value="o">Oberwelt</option><option value="n">Nether</option><option value="e">End</option></select>
+<div class="chk" id="bio" style="margin-top:6px"></div>
+<div style="margin-top:4px"><button class="s" id="ball">Alle</button> <button class="s" id="bnone">Keine</button></div>
+<div id="rbio"></div></fieldset>
+<fieldset><legend>Formen (nichts natürlich!)</legend><div class="chk" id="frm"></div><div id="rw"></div></fieldset>
+<fieldset><legend>Gelände</legend><div id="rt"></div></fieldset>
+<fieldset><legend>Bäume / Objekte</legend><div id="rtr"></div></fieldset>
+</div>
+<div id="bp" class="hide"><fieldset><legend>Objekt</legend>
+<div class="r"><label>Art</label><select id="tt" style="grid-column:span 2"></select></div><div id="rb"></div>
+<div class="r"><label>Stammdicke</label><select id="tk" style="grid-column:span 2"><option value="1">1×1</option><option value="2">2×2</option></select></div>
+<div class="r"><label>Bodenplatte</label><input type="checkbox" id="tg" checked></div></fieldset></div>
+<fieldset><legend>Export</legend>
+<div class="r"><label>Dateiname</label><input type="text" id="fn" value="mein_terrain" style="grid-column:span 2"></div>
+<div class="r"><label>MC-Version</label><select id="ver" style="grid-column:span 2"><option value="3955">1.21.x</option><option value="3700">1.20.4</option><option value="3465">1.20.1</option><option value="3337">1.19.4</option></select></div>
+<div class="r"><label>Bedrock-Rand</label><input type="checkbox" id="bed"></div>
+<button id="exp" style="width:100%;margin-top:6px">⬇ Als .schem speichern</button></fieldset>
+</aside>
+<main>
+<div id="wrap"><canvas id="gl"></canvas><div id="ov"><label><input type="checkbox" id="auto" checked> Auto-Drehung</label><button class="s" id="rst">Ansicht zurücksetzen</button></div>
+<div id="hl">Ziehen: drehen · Shift/Rechtsklick: verschieben · Mausrad: Zoom</div></div>
+<div class="box" id="edbox"><h2>Gelände zeichnen – Berge, Täler, alles frei (Linien-Werkzeuge: ziehen)</h2>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
+<select id="tool" style="width:auto"><optgroup label="Stempel (Klick)"><option value="berg">Berg (Kegel)</option><option value="huegel">Hügel (rund)</option><option value="plateau">Plateau / Mesa</option><option value="vulkan">Vulkan</option><option value="pyramide">Pyramide</option><option value="ziggurat">Stufenpyramide</option><option value="nadel">Felsnadel</option><option value="turm">Turm / Säule</option><option value="tal">Tal (Mulde)</option><option value="krater">Krater</option></optgroup><optgroup label="Linie (ziehen)"><option value="grat">Gebirgskamm</option><option value="schlucht">Schlucht</option></optgroup><optgroup label="Pinsel (malen)"><option value="hoch">Anheben</option><option value="tief">Absenken</option><option value="glatt">Glätten</option><option value="eben">Einebnen (Höhe = Wert)</option></optgroup></select>
+<label>Radius <input type="range" id="ebr" min="2" max="300" value="25" style="width:110px"></label>
+<label>Höhe/Stärke <input type="range" id="eba" min="1" max="160" value="24" style="width:110px"></label>
+<button class="s" id="eundo">↶ Zurück</button><button class="s" id="eclr">Zeichnung löschen</button></div>
+<canvas id="ed" style="width:100%;max-height:50vh;object-fit:contain;image-rendering:pixelated;touch-action:none;cursor:crosshair;display:block;background:#0003;border-radius:6px"></canvas>
+<div style="font-size:12px;color:var(--mu);margin-top:4px">Tipp: links „Flach starten“ aktivieren und nur eigene Formen zeichnen. Im End wirkt die Zeichnung nicht (dort Inseln).</div></div>
+<div class="box"><h2>Seitenschnitt <input type="range" id="sl" min="0" max="0" value="0" style="width:200px;vertical-align:middle"></h2><canvas id="side"></canvas></div>
+<div id="info"></div>
+<p style="color:var(--mu);font-size:13px">In Minecraft: Datei nach <code>config/worldedit/schematics</code>, dann <code>//schem load name</code> und <code>//paste</code>.</p>
+</main>
+<script>
+const $=id=>document.getElementById(id),v=id=>+$(id).value,cl=(x,a,b)=>Math.max(a,Math.min(b,x));
+const rg=(id,l,mn,mx,val,st)=>`<div class="r"><label>${l}</label><input type="range" id="${id}" min="${mn}" max="${mx}" value="${val}" step="${st||1}"><b id="${id}v">${val}</b></div>`;
+$('rbio').innerHTML=rg('bsize','Biomgröße',20,300,70);
+$('rw').innerHTML=rg('wild','Wildheit',0,100,60);
+$('rt').innerHTML=rg('scale','Geländegröße',8,200,36)+rg('rough','Zerklüftung',0,2,1,.05)+rg('wl','Flüssigkeit %',0,60,25)+`<div class="r"><label>Flach starten</label><input type="checkbox" id="flat"></div>`+rg('basey','Basishöhe %',0,100,30);
+$('rtr').innerHTML=rg('tdens','Dichte ×',0,4,1,.1)+rg('tmin','Höhe min',3,40,5)+rg('tmax','Höhe max',3,40,10)+`<div class="r"><label>Baumstil</label><select id="tstyle" style="grid-column:span 2"></select></div>`;
+$('rb').innerHTML=rg('th','Höhe',3,80,12)+rg('tc','Radius/Krone',1,15,3)+'<div id="rc">'+rg('tr','Stammradius',.5,8,1.8,.1)+rg('br','Äste',2,22,6)+rg('dr','Hängen %',0,100,15)+rg('rts','Wurzeln',0,12,5)+rg('ld','Blattdichte %',20,100,85)+
+`<div class="r"><label>Holz</label><select id="mw" style="grid-column:span 2"><option value="">Stil-Standard</option>${['oak','spruce','birch','jungle','acacia','dark_oak','mangrove','cherry','crimson','warped'].map(w=>`<option>${w}</option>`).join('')}</select></div><div class="r"><label>Laub</label><select id="ml" style="grid-column:span 2"><option value="">Holzart-Standard</option><option value="azalea">Azalee-Mix</option><option value="moss">Moos-Mix</option><option value="cherry">Kirsche</option><option value="crimson">Karmesin</option><option value="warped">Wirr</option><option value="snow">Schnee</option><option value="crystal">Kristall</option></select></div></div>`;
+const FORMS={warp:'Wirbel-Verzerrung',terr:'Terrassen',spike:'Spitzen & Säulen',crat:'Krater',wave:'Wellen & Dünen',col:'Basalt-Raster',cave:'Höhlen & Bögen',isl:'Schwebeinseln',fant:'Fantasy-Farben'};
+$('frm').innerHTML=Object.keys(FORMS).map(k=>`<label><input type="checkbox" value="${k}" ${k=='warp'?'checked':''}> ${FORMS[k]}</label>`).join('');
+// ---------- Blockfarben
+const COL={};`grass_block 96,150,60;dirt 134,96,67;stone 125,125,125;sand 219,207,163;red_sand 190,102,33;sandstone 216,203,155;red_sandstone 181,98,32;snow_block 245,250,250;water 50,90,200;lava 230,110,20;gravel 130,125,125;mud 70,62,58;bedrock 40,40,40;podzol 110,75,35;coarse_dirt 120,85,58;mycelium 110,90,115;moss_block 90,110,45;deepslate 75,75,80;sculk 15,50,60;calcite 225,225,220;packed_ice 140,180,240;ice 150,190,250;tuff 110,110,100;clay 160,166,180;netherrack 110,50,50;soul_sand 80,62,50;soul_soil 75,58,48;crimson_nylium 130,25,40;warped_nylium 30,120,115;blackstone 40,36,44;basalt 70,70,76;magma_block 150,60,20;end_stone 222,224,160;obsidian 25,15,40;cactus 20,120,40;bamboo 120,150,40;chorus_plant 110,70,130;dripstone_block 130,100,85;bone_block 225,220,195;amethyst_block 130,90,190;
+oak_log 102,81,50;birch_log 215,210,190;spruce_log 60,42,25;acacia_log 130,110,100;dark_oak_log 50,35,20;cherry_log 90,50,60;jungle_log 85,65,35;mangrove_log 100,50,45;crimson_stem 120,40,70;warped_stem 40,110,110;mushroom_stem 210,205,195;
+oak_leaves 60,120,40;birch_leaves 100,150,60;spruce_leaves 40,85,55;acacia_leaves 90,130,40;dark_oak_leaves 35,85,30;cherry_leaves 240,160,200;jungle_leaves 50,140,30;mangrove_leaves 70,130,50;azalea_leaves 110,150,60;nether_wart_block 120,15,15;warped_wart_block 20,150,140;red_mushroom_block 200,40,40;brown_mushroom_block 150,110,80;
+terracotta 152,94,67;orange_terracotta 161,83,37;red_terracotta 143,61,46;yellow_terracotta 186,133,36;white_terracotta 209,178,161;brown_terracotta 77,51,35;light_gray_terracotta 135,107,98;
+white_concrete 207,213,214;orange_concrete 224,97,1;magenta_concrete 169,48,159;light_blue_concrete 36,137,199;yellow_concrete 241,175,21;lime_concrete 94,168,24;pink_concrete 213,101,142;cyan_concrete 21,119,136;purple_concrete 100,32,156;blue_concrete 45,47,143;red_concrete 142,33,33;green_concrete 73,91,36`.replace(/\n/g,'').split(';').forEach(s=>{const[a,b]=s.split(' ');COL[a]=b.split(',').map(Number)});
+const FANT=['orange','magenta','light_blue','yellow','lime','pink','cyan','purple','blue','red','green','white'].map(n=>n+'_concrete');
+const BANDS=['terracotta','orange_terracotta','terracotta','yellow_terracotta','white_terracotta','red_terracotta','brown_terracotta','light_gray_terracotta'];
+// ---------- Biome: key|Name|dim|base|amp|top|sub|stein|ufer|bäume|dichte|flag
+const BI={};`plains|Ebene|o|.32|.08|grass_block|dirt|stone|sand|oak|.002|
+forest|Wald|o|.36|.14|grass_block|dirt|stone|sand|oak,oak,birch|.03|
+birch_forest|Birkenwald|o|.36|.12|grass_block|dirt|stone|sand|birch|.035|
+dark_forest|Dunkler Wald|o|.36|.12|grass_block|dirt|stone|sand|dark_oak,mushroom_red|.04|
+taiga|Taiga|o|.4|.18|grass_block|dirt|stone|gravel|spruce|.03|
+snowy_taiga|Verschneite Taiga|o|.4|.18|snow_block|dirt|stone|gravel|spruce|.03|
+old_growth_taiga|Alte Taiga|o|.4|.2|podzol|dirt|stone|gravel|spruce|.045|
+snowy_plains|Schneeebene|o|.32|.08|snow_block|dirt|stone|gravel|spruce|.002|
+ice_spikes|Eiszapfen-Ebene|o|.32|.06|snow_block|packed_ice|stone|gravel|ice_spike|.012|
+jungle|Dschungel|o|.38|.22|grass_block|dirt|stone|sand|jungle,jungle,oak|.05|
+sparse_jungle|Lichter Dschungel|o|.36|.18|grass_block|dirt|stone|sand|jungle,oak|.02|
+bamboo_jungle|Bambus-Dschungel|o|.36|.18|podzol|dirt|stone|sand|bamboo,jungle|.05|
+savanna|Savanne|o|.34|.1|grass_block|dirt|stone|sand|acacia|.006|
+windswept_savanna|Windgepeitschte Savanne|o|.42|.35|grass_block|dirt|stone|sand|acacia|.006|
+desert|Wüste|o|.3|.12|sand|sandstone|sandstone|sand|cactus|.003|
+badlands|Badlands|o|.42|.3|stone|stone|terracotta|red_sand|-|0|band
+eroded_badlands|Zerklüftete Badlands|o|.45|.55|stone|stone|terracotta|red_sand|-|0|band
+swamp|Sumpf|o|.26|.04|grass_block|dirt|stone|mud|oak|.015|
+mangrove_swamp|Mangrovensumpf|o|.26|.04|mud|mud|stone|mud|mangrove|.04|
+meadow|Wiese|o|.45|.15|grass_block|dirt|stone|gravel|oak,birch|.002|
+cherry_grove|Kirschhain|o|.45|.15|grass_block|dirt|stone|gravel|cherry|.02|
+grove|Hain|o|.5|.2|snow_block|dirt|stone|gravel|spruce|.02|
+snowy_slopes|Verschneite Hänge|o|.55|.3|snow_block|snow_block|stone|gravel|-|0|
+jagged_peaks|Zackige Gipfel|o|.7|.6|grass_block|dirt|stone|gravel|-|0|cap:snow_block
+frozen_peaks|Gefrorene Gipfel|o|.7|.6|snow_block|snow_block|stone|gravel|-|0|cap:packed_ice
+stony_peaks|Steinige Gipfel|o|.65|.55|grass_block|dirt|stone|gravel|-|0|cap:calcite
+windswept_hills|Windgepeitschte Hügel|o|.45|.4|grass_block|dirt|stone|gravel|spruce,oak|.004|
+beach|Strand|o|.265|.015|sand|sand|sandstone|sand|-|0|
+stony_shore|Steinküste|o|.3|.2|stone|stone|stone|gravel|-|0|
+mushroom_fields|Pilzinsel|o|.3|.1|mycelium|dirt|stone|mycelium|mushroom_red,mushroom_brown|.01|
+river|Fluss|o|.2|.03|sand|clay|stone|sand|-|0|
+ocean|Ozean|o|.1|.06|gravel|sand|stone|sand|-|0|
+deep_ocean|Tiefsee|o|.03|.05|gravel|gravel|stone|gravel|-|0|
+warm_ocean|Warmer Ozean|o|.1|.06|sand|sand|stone|sand|-|0|
+dripstone_caves|Tropfsteinhöhlen|o|.4|.25|stone|dripstone_block|stone|gravel|dripstone|.04|
+lush_caves|Üppige Höhlen|o|.4|.2|moss_block|dirt|stone|moss_block|azalea|.03|
+deep_dark|Deep Dark|o|.35|.2|sculk|deepslate|deepslate|deepslate|-|0|
+nether_wastes|Nether-Ödnis|n|.35|.25|netherrack|netherrack|netherrack|netherrack|-|0|
+crimson_forest|Karmesinwald|n|.35|.22|crimson_nylium|netherrack|netherrack|netherrack|crimson|.02|
+warped_forest|Wirrwald|n|.35|.22|warped_nylium|netherrack|netherrack|netherrack|warped|.025|
+soul_sand_valley|Seelensandtal|n|.3|.2|soul_sand|soul_soil|netherrack|soul_sand|bone|.012|
+basalt_deltas|Basaltdeltas|n|.35|.3|basalt|blackstone|blackstone|magma_block|basalt|.05|
+the_end|Das Ende|e|.4|.1|end_stone|end_stone|end_stone|end_stone|obsidian|.003|
+end_highlands|End-Hochland|e|.45|.25|end_stone|end_stone|end_stone|end_stone|chorus|.012|
+end_midlands|End-Mittelland|e|.4|.15|end_stone|end_stone|end_stone|end_stone|chorus|.004|
+end_barrens|End-Ödland|e|.35|.08|end_stone|end_stone|end_stone|end_stone|-|0|
+small_end_islands|Kleine End-Inseln|e|.25|.05|end_stone|end_stone|end_stone|end_stone|-|0|`.split('\n').forEach(l=>{const a=l.split('|');BI[a[0]]={n:a[1],dim:a[2],base:+a[3],amp:+a[4],top:a[5],sub:a[6],st:a[7],shore:a[8],tr:a[9]==='-'?[]:a[9].split(','),d:+a[10],cap:(a[11]||'').startsWith('cap:')?a[11].slice(4):null,band:a[11]==='band'}});
+const DEF={o:['forest','jagged_peaks','desert'],n:['nether_wastes','crimson_forest','warped_forest'],e:['the_end','end_highlands']};
+function bioUI(){const d=$('dim').value;$('bio').innerHTML=Object.keys(BI).filter(k=>BI[k].dim===d).map(k=>`<label><input type="checkbox" value="${k}" ${DEF[d].includes(k)?'checked':''}> ${BI[k].n}</label>`).join('')}
+// ---------- Baum-/Objekttypen
+const Wd=(n,e)=>Object.assign({s:'b',lg:n+'_log[axis=y]',lf:n+'_leaves[persistent=true]',v:.9},e);
+const TT={oak:Wd('oak'),birch:Wd('birch',{v:1.2,rs:.75,h:1.15}),dark_oak:Wd('dark_oak',{v:.65,rs:1.2}),cherry:Wd('cherry',{v:.8,rs:1.3}),jungle:Wd('jungle',{h:1.5}),mangrove:Wd('mangrove',{v:.8,rs:1.2}),
+spruce:Wd('spruce',{s:'c',h:1.2}),acacia:Wd('acacia',{s:'f',rs:1.3}),azalea:{s:'b',lg:'oak_log[axis=y]',lf:'azalea_leaves[persistent=true]',v:.7,rs:1},
+crimson:{s:'b',lg:'crimson_stem[axis=y]',lf:'nether_wart_block',v:.7,rs:1.3},warped:{s:'b',lg:'warped_stem[axis=y]',lf:'warped_wart_block',v:.7,rs:1.3},
+mushroom_red:{s:'m',lg:'mushroom_stem',lf:'red_mushroom_block',rs:1.4},mushroom_brown:{s:'m',lg:'mushroom_stem',lf:'brown_mushroom_block',rs:1.6},
+bamboo:{s:'p',lg:'bamboo',h:1.6},cactus:{s:'p',lg:'cactus',h:.4},chorus:{s:'p',lg:'chorus_plant',h:1.2},
+ice_spike:{s:'s',lg:'packed_ice',h:2},dripstone:{s:'s',lg:'dripstone_block',h:1.3},bone:{s:'s',lg:'bone_block',h:1.5},basalt:{s:'s',lg:'basalt',h:1.8},crystal:{s:'s',lg:'amethyst_block',h:1.5},obsidian:{s:'y',lg:'obsidian',h:3}};
+const TN={oak:'Eiche',birch:'Birke',dark_oak:'Schwarzeiche',cherry:'Kirsche',jungle:'Dschungelbaum',mangrove:'Mangrove',spruce:'Fichte',acacia:'Akazie',azalea:'Azalee',crimson:'Karmesin-Pilz',warped:'Wirr-Pilz',mushroom_red:'Riesenpilz rot',mushroom_brown:'Riesenpilz braun',bamboo:'Bambus',cactus:'Kaktus',chorus:'Chorus',ice_spike:'Eiszapfen',dripstone:'Tropfstein',bone:'Knochen-Spitze',basalt:'Basalt-Spitze',crystal:'Kristall',obsidian:'Obsidian-Säule'};
+$('tt').innerHTML=Object.keys(TN).map(k=>`<option value="${k}">${TN[k]}</option>`).join('');
+const GRD={cactus:'sand',ice_spike:'snow_block',crimson:'crimson_nylium',warped:'warped_nylium',bone:'soul_sand',basalt:'basalt',chorus:'end_stone',obsidian:'end_stone',dripstone:'stone',crystal:'stone',mushroom_red:'mycelium',mushroom_brown:'mycelium',bamboo:'podzol'};
+// ---------- Noise
+function rng(s){return()=>{s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hash(x,y,s){let h=Math.imul(x,374761393)+Math.imul(y,668265263)+Math.imul(s,1274126177);h=Math.imul(h^h>>>13,1274126177);return((h^h>>>16)>>>0)/4294967296}
+function vn(x,y,s){const xi=Math.floor(x),yi=Math.floor(y),fx=x-xi,fy=y-yi,u=fx*fx*(3-2*fx),w=fy*fy*(3-2*fy),a=hash(xi,yi,s),b=hash(xi+1,yi,s),c=hash(xi,yi+1,s),d=hash(xi+1,yi+1,s);return a+(b-a)*u+(c-a)*w+(a-b-c+d)*u*w}
+function vn3(x,y,z,s){const xi=Math.floor(x),yi=Math.floor(y),zi=Math.floor(z),fx=x-xi,fy=y-yi,fz=z-zi,u=fx*fx*(3-2*fx),w=fy*fy*(3-2*fy),q=fz*fz*(3-2*fz),h=(a,b,c)=>hash(xi+a,(yi+b)*7919+zi+c,s+c*13),l=(a,b,t)=>a+(b-a)*t;
+ return l(l(l(h(0,0,0),h(1,0,0),u),l(h(0,1,0),h(1,1,0),u),w),l(l(h(0,0,1),h(1,0,1),u),l(h(0,1,1),h(1,1,1),u),w),q)}
+function fbm(x,y,s,o=5){let a=.5,f=1,t=0,n=0;for(let i=0;i<o;i++){t+=a*vn(x*f,y*f,s+i*101);n+=a;a*=.5;f*=2}return t/n}
+class Grid{constructor(W,H,L){this.W=W;this.H=H;this.L=L;this.d=new Uint16Array(W*H*L);this.pal=['minecraft:air'];this.c={air:0}}
+id(n){let i=this.c[n];if(i===undefined){i=this.pal.length;this.pal.push('minecraft:'+n);this.c[n]=i}return i}
+ix(x,y,z){return x+z*this.W+y*this.W*this.L}inb(x,y,z){return x>=0&&y>=0&&z>=0&&x<this.W&&y<this.H&&z<this.L}
+set(x,y,z,n){if(this.inb(x,y,z))this.d[this.ix(x,y,z)]=this.id(n)}}
+// ---------- Bäume
+function tree(g,t,x,y,z,ht,cr,th,R){
+ const c=TT[t];
+ if(c.s==='o'){const B=STY[c.st],k=ht/B.ht,S=Object.assign({},B,{ht,lr:B.lr*k,tr:Math.max(.7,B.tr*Math.sqrt(k)),rl:(B.rl||B.tr*2.2+B.ht*.15)*k,ra:(B.ra||B.tr*.9)*k,hl:B.hl*k});otree(g,S,c.wood||B.wood,c.leaf!==undefined?c.leaf:(B.leaf||''),x,y,z,R);return}
+ const rs=cr*(c.rs||1),cx=x+(th-1)/2,cz=z+(th-1)/2;
+ const pl=(a,b,d)=>{if(g.inb(a,b,d)){const k=g.ix(a,b,d),q=g.d[k];if(q===0||g.pal[q].includes('leaves')||g.pal[q].includes('wart')||g.pal[q].includes('mushroom_block'))g.d[k]=g.id(c.lg)}};
+ const pf=(a,b,d)=>{if(g.inb(a,b,d)){const k=g.ix(a,b,d);if(!g.d[k])g.d[k]=g.id(c.lf)}};
+ const T=(px,py,pz)=>{for(let a=0;a<th;a++)for(let b=0;b<th;b++)pl(px+a,py,pz+b)};
+ const disc=(ox,oz,yy,r,fn=pf)=>{for(let a=Math.floor(ox-r-1);a<=Math.ceil(ox+r+1);a++)for(let b=Math.floor(oz-r-1);b<=Math.ceil(oz+r+1);b++)if((a-ox)**2+(b-oz)**2<=r*r+.5)fn(a,yy,b)};
+ if(c.s==='p'){for(let i=0;i<Math.max(1,ht);i++)pl(x,y+i,z)}
+ else if(c.s==='s'){for(let i=0;i<ht;i++)disc(x,z,y+i,Math.max(0,cr*(1-i/ht)),pl)}
+ else if(c.s==='y'){for(let i=0;i<ht;i++)disc(x,z,y+i,cr,pl)}
+ else if(c.s==='m'){const h=Math.max(2,ht);for(let j=0;j<=Math.ceil(rs*.6);j++)disc(x,z,y+h-1+j,Math.max(0,rs*Math.sqrt(Math.max(0,1-(j/(rs*.7+.01))**2))));for(let i=0;i<h;i++)pl(x,y+i,z)}
+ else if(c.s==='c'){for(let j=0;j<=ht-2;j++)disc(cx,cz,y+ht-j,Math.max(0,Math.round(rs*j/Math.max(1,ht-2))-(j%2?1:0)));for(let i=0;i<ht;i++)T(x,y+i,z)}
+ else if(c.s==='b'){const rv=Math.max(1.5,rs*c.v),cy=y+ht-Math.floor(rv*.4);
+  for(let yy=Math.floor(cy-rv);yy<=Math.ceil(cy+rv);yy++)for(let a=Math.floor(cx-rs-1);a<=Math.ceil(cx+rs+1);a++)for(let b=Math.floor(cz-rs-1);b<=Math.ceil(cz+rs+1);b++){
+   const d=((a-cx)**2+(b-cz)**2)/(rs*rs)+(yy-cy)**2/(rv*rv);if(d<=1+(R()-.5)*.35)pf(a,yy,b)}
+  for(let i=0;i<ht;i++)T(x,y+i,z)}
+ else{const a0=Math.ceil(ht*.6),[dx,dz]=[[1,0],[-1,0],[0,1],[0,-1]][R()*4|0];
+  disc(cx+dx,cz+dz,y+ht,rs);disc(cx+dx,cz+dz,y+ht+1,Math.max(1,rs-1.2));
+  for(let i=0;i<a0;i++)T(x,y+i,z);for(let i=a0;i<ht;i++)T(x+dx,y+i,z+dz)}
+}
+function genSingle(){const t=$('tt').value,R=rng(v('seed')),gr=$('tg').checked;
+ if(t.startsWith('s:')){const B=STY[t.slice(2)],S=Object.assign({},B,{ht:v('th'),lr:v('tc'),tr:v('tr'),br:v('br'),dr:v('dr'),rts:v('rts'),ld:v('ld')}),w=$('mw').value||B.wood,
+  e=Math.ceil(Math.max(S.brL*S.ht*Math.cos(S.up)*1.35+S.lr*1.5+S.lean*S.ht+S.wob+3,(S.rl||S.tr*2.2+S.ht*.15)+S.tr+3)),W=2*e+1,H=Math.ceil(S.ht+S.brL*S.ht*Math.sin(S.up)*1.3+S.lr*1.6)+7+(gr?1:0),g=new Grid(W,H,W);
+  if(gr){const id=g.id(w==='crimson'?'crimson_nylium':w==='warped'?'warped_nylium':'grass_block');for(let i=0;i<W*W;i++)g.d[i]=id}
+  otree(g,S,w,$('ml').value||B.leaf||'',e,gr?1:0,e,R);return g}
+ const ht=v('th'),cr=v('tc'),c=TT[t],th=('bcf'.includes(c.s)&&+$('tk').value)||1,pad=Math.ceil(cr*(c.rs||1)+ht*.4)+2,W=2*pad+th,H=ht+Math.ceil(cr)+6,g=new Grid(W,H,W);
+ if(gr){const id=g.id(GRD[t]||'grass_block');for(let i=0;i<W*W;i++)g.d[i]=id}
+ tree(g,t,pad,gr?1:0,pad,ht,cr,th,R);return g}
+// ---------- Terrain
+function genTerrain(){
+ const dim=$('dim').value,PL=$('mode').value==='p'?plotCfg():null,W=PL?PL.W:cl(v('sx'),1,4096),L=PL?PL.L:cl(v('sz'),1,4096),H=PL?PL.H:cl(v('sy'),4,384),seed=v('seed'),sc=v('scale'),rough=v('rough'),
+ wl=dim==='e'?-1:PL?(PL.moat>0?PL.py-2:-1):Math.round(H*v('wl')/100),wild=v('wild')/100,tdens=v('tdens'),tmin=v('tmin'),tmax=Math.max(tmin,v('tmax')),bs=v('bsize');
+ const F={};document.querySelectorAll('#frm input').forEach(i=>F[i.value]=i.checked);
+ let sel=[...document.querySelectorAll('#bio input:checked')].map(i=>i.value);
+ if(!sel.length){sel=[Object.keys(BI).find(k=>BI[k].dim===dim)];document.querySelector('#bio input').checked=true}
+ if(W*H*L>6e7)throw new Error('Zu groß (max. ~60 Mio. Blöcke)');
+ const g=new Grid(W,H,L),S=W*L,R=rng(seed),hm=new Float32Array(S),bm=new Uint8Array(S),d=g.d,pd=PL?new Float32Array(S):null;
+ for(let z=0;z<L;z++)for(let x=0;x<W;x++){const i=z*W+x;let bi=0;
+  if(sel.length>1)bi=Math.min(sel.length-1,Math.floor(cl((fbm(x/bs+500,z/bs+500,seed+7,3)-.3)/.4,0,.999)*sel.length));
+  bm[i]=bi;const B=BI[sel[bi]];let wx=x,wz=z;
+  if(F.warp){wx+=(fbm(x/45,z/45,seed+31,3)-.5)*400*wild;wz+=(fbm(x/45+99,z/45,seed+37,3)-.5)*400*wild}
+  const n=cl((fbm(wx/sc,wz/sc,seed)-.5)*2.4+.5,0,1);let h=PL?plotH(PL,x,z,n,rough,pd,i):($('flat').checked?v('basey')/100:(B.base+B.amp*rough*(n-.5)*2))*(H-1);
+  if(F.wave)h+=Math.sin(wx/(sc*.4)+Math.sin(wz/(sc*.3))*2)*H*.07*(wild+.3);
+  if(F.spike){const r=vn(x/7,z/7,seed+9);if(r>.76)h+=(r-.76)/.24*H*.7*(wild+.2)}
+  hm[i]=h}
+ if(sel.length>1)for(let k=0;k<2;k++){const t=new Float32Array(S);
+  for(let z=0;z<L;z++)for(let x=0;x<W;x++){let s=0,c=0;for(let a=-3;a<=3;a++){const xx=x+a;if(xx>=0&&xx<W){s+=hm[z*W+xx];c++}}t[z*W+x]=s/c}
+  for(let z=0;z<L;z++)for(let x=0;x<W;x++){let s=0,c=0;for(let a=-3;a<=3;a++){const zz=z+a;if(zz>=0&&zz<L){s+=t[zz*W+x];c++}}hm[z*W+x]=s/c}}
+ {const scu=sculptFor(W,L);for(let i=0;i<S;i++)hm[i]+=scu[i]} if(F.crat){const N=Math.min(400,Math.round(W*L/2500*(wild+.2)));for(let k=0;k<N;k++){const cx=R()*W,cz=R()*L,r=5+R()*15,dp=H*.2*(.4+R()*.6);
+  for(let z=Math.max(0,Math.floor(cz-r*1.3));z<Math.min(L,cz+r*1.3);z++)for(let x=Math.max(0,Math.floor(cx-r*1.3));x<Math.min(W,cx+r*1.3);x++){const q=Math.hypot(x-cx,z-cz);
+   if(q<r)hm[z*W+x]-=dp*(1-(q/r)**2);else if(q<r*1.25)hm[z*W+x]+=dp*.3*(1-(q-r)/(r*.25))}}}
+ if(F.terr){const st=Math.max(2,Math.round(H/9)),m=cl(wild*1.6,0,1);for(let i=0;i<S;i++){const f=hm[i]/st,fl=Math.floor(f),fr=cl((f-fl-.7)/.3,0,1),tg=(fl+fr*fr*(3-2*fr))*st;hm[i]+=(tg-hm[i])*m}}
+ if(F.col){const t=hm.slice();for(let z=0;z<L;z++)for(let x=0;x<W;x++){const cx=Math.min(W-1,Math.floor(x/4)*4+2),cz=Math.min(L-1,Math.floor(z/4)*4+2);
+  hm[z*W+x]=t[cz*W+cx]-((x%4===3||z%4===3)?1+Math.floor(hash(x,z,seed)*3):0)}}
+ if(PL)for(let i=0;i<S;i++)if(pd[i]<=0)hm[i]=PL.top;
+ const bed=$('bed').checked,liq=g.id(dim==='n'?'lava':'water'),brk=g.id('bedrock'),bands=BANDS.map(n=>g.id(n)),fI=F.fant?FANT.map(n=>g.id(n)):null,can=new Uint8Array(S),hh=new Int16Array(S);
+ const cthr=.8-.3*Math.max(wild,.25);
+ for(let z=0;z<L;z++)for(let x=0;x<W;x++){const i=z*W+x,B=BI[sel[bm[i]]],stI=g.id(B.st);let tI=0,sI=0;
+  if(fI){const q=cl(Math.floor((fbm(x/22+700,z/22,seed+3,2)-.3)/.4*fI.length),0,fI.length-1);tI=fI[q];sI=fI[(q+3)%fI.length]}
+  else if(B.band){tI=bands[0];sI=bands[2]}else{tI=g.id(B.top);sI=g.id(B.sub)}
+  if(dim==='e'&&!PL){const m=fbm(x/sc,z/sc,seed),thr=.62-B.base*.3,it=cl((m-thr)/.2,0,1);if(it<=0)continue;
+   const top=cl(Math.round(H*.55+(fbm(x/(sc*.5)+9,z/(sc*.5),seed+5,3)-.5)*H*B.amp*rough*4),2,H-2),bot=cl(top-Math.max(1,Math.round(Math.pow(it,.7)*H*.45)),0,top-1);
+   for(let y=bot;y<=top;y++)d[x+z*W+y*S]=y===top?tI:y>=top-2?sI:stI;
+   hh[i]=top;can[i]=B.tr.length?1:0;continue}
+  const h=Math.round(cl(hm[i],1,H-1)),shore=dim==='o'&&h<=wl+1;hh[i]=h;
+  if(!fI&&!B.band){if(shore){tI=sI=g.id(B.shore)}else if(B.cap&&h>=H*.8){tI=sI=g.id(B.cap)}else if(B.cap&&h>=H*.55){tI=sI=stI}}
+  for(let y=0;y<=h;y++){let b;if(y===0&&bed)b=brk;else if(B.band&&!fI&&y>2)b=bands[y%bands.length];else if(y===h)b=tI;else if(y>=h-3)b=sI;else b=stI;d[x+z*W+y*S]=b}
+  for(let y=h+1;y<=wl;y++)d[x+z*W+y*S]=liq;
+  if(dim==='n'){let th=2+Math.round(fbm(x/25,z/25,seed+71)*H*.3*(.4+wild));th=Math.min(th,H-h-3);for(let y=H-th;y<H;y++)d[x+z*W+y*S]=(y===H-1&&bed)?brk:stI}
+  if(F.cave)for(let y=2;y<h-1;y++)if(vn3(x/(sc*.6),y/(sc*.4),z/(sc*.6),seed+77)>cthr)d[x+z*W+y*S]=0;
+  can[i]=(!shore&&h>wl&&B.tr.length&&(!pd||pd[i]>7))?1:0;
+  if(F.isl&&dim==='o'&&H>=12){const m=fbm(x/(sc*1.6)+300,z/(sc*1.6)+300,seed+55,4),it=cl((m-(.66-.12*wild))/.15,0,1);
+   if(it>0){const top=Math.round(H*.72+(fbm(x/20,z/20,seed+8,2)-.5)*H*.2),bot=cl(top-Math.round(it*H*.3),1,top-1);
+    for(let y=bot;y<=top;y++){const k=x+z*W+y*S;if(!d[k])d[k]=y===top?tI:y>=top-2?sI:stI}}}}
+ const mask=new Uint8Array(S);
+ for(let z=0;z<L;z++)for(let x=0;x<W;x++){const i=z*W+x;if(!can[i])continue;const B=BI[sel[bm[i]]];if(R()>=B.d*tdens)continue;
+  let ok=true;for(let a=-2;a<=2&&ok;a++)for(let b=-2;b<=2;b++){const xx=x+a,zz=z+b;if(xx>=0&&zz>=0&&xx<W&&zz<L&&mask[zz*W+xx]){ok=false;break}}
+  if(!ok)continue;const ts=$('tstyle').value,t=mapTree(B.tr[R()*B.tr.length|0],ts),c=TT[t],y0=hh[i]+1;
+  if(c.s==='o'&&R()>.35)continue;
+  let ht=Math.round((tmin+R()*(tmax-tmin))*(c.s==='o'?STY[c.st].ht/10:(c.h||1)));ht=Math.min(ht,H-y0-1);if(ht<2)continue;
+  const cr=c.s==='s'?cl(Math.round(ht*.18),1,4):c.s==='y'?2+Math.floor(R()*2):cl(Math.round(ht*.35+R()),2,6);
+  mask[i]=1;tree(g,t,x,y0,z,ht,cr,1,R)}
+ LH={W,L,H,wl,h:hh};view=Float32Array.from(hh);
+ return g}
+// ---------- Seitenschnitt
+let G=null;function guess(n){if(/leaves/.test(n))return[60,120,40];if(/(log|wood|stem|hyphae)/.test(n))return[100,80,50];if(/wart/.test(n))return[120,15,15];return[150,150,150]}
+const cn=n=>{const b=n.replace('minecraft:','').split('[')[0];return TX.avg[b]||COL[b]||guess(b)};
+function side(){if(!G)return;const g=G,{W,H,L}=g,S=W*L,d=g.d,pc=g.pal.map(cn),zl=L>=W,hl=zl?L:W,s=+$('sl').value,cv=$('side');cv.width=hl;cv.height=H;
+ const cx=cv.getContext('2d'),im=cx.createImageData(hl,H);
+ for(let u=0;u<hl;u++)for(let y=0;y<H;y++){const b=d[zl?s+u*W+y*S:u+s*W+y*S];if(!b)continue;const o=((H-1-y)*hl+u)*4,c=pc[b];im.data[o]=c[0];im.data[o+1]=c[1];im.data[o+2]=c[2];im.data[o+3]=255}
+ cx.putImageData(im,0,0);cv.style.maxWidth=Math.max(hl*Math.min(8,Math.floor(900/hl)||1),300)+'px'}
+// ---------- 3D (WebGL2, instanzierte Quads)
+const cv=$('gl'),gl=cv.getContext('webgl2',{alpha:true,premultipliedAlpha:false,antialias:true});
+const VS=`#version 300 es
+precision highp float;
+layout(location=0)in vec2 aU;layout(location=1)in vec4 aP;layout(location=2)in vec4 aC;uniform mat4 uM;out vec4 vC;out vec2 vT;
+void main(){float f=mod(aP.w,8.),tl=floor(aP.w/8.);vec2 q=aU;
+vec3 o=f<.5?vec3(1,q.y,q.x):f<1.5?vec3(0,q.y,1.-q.x):f<2.5?vec3(q.x,1,q.y):f<3.5?vec3(q.x,0,q.y):f<4.5?vec3(1.-q.x,q.y,1):vec3(q.x,q.y,0);
+float s=f<1.5?.78:f<2.5?1.:f<3.5?.5:.64;vec2 uv=(f>1.5&&f<3.5)?q:vec2(q.x,1.-q.y);
+vT=(vec2(mod(tl,32.),floor(tl/32.))+uv*.96+.02)/32.;vC=vec4(aC.rgb*s,aC.a);gl_Position=uM*vec4(aP.xyz+o,1);}`;
+const FS=`#version 300 es
+precision mediump float;uniform sampler2D uT;in vec4 vC;in vec2 vT;out vec4 o;void main(){vec4 t=texture(uT,vT);o=vec4(t.rgb*vC.rgb,vC.a);}`;
+const TX={sig:'',imgs:new Map(),tiles:new Map(),tileN:0,avg:{},tav:[],pt:[[0,0,0]],gt:null,src:'gh',ver:'1.21.10',zip:null,zipName:'',ok:0,tot:0};
+let prog,uM,uT,qb,sets=[],cam={yaw:.8,pit:.55,dist:100,t:[0,0,0]},dirty=true,lastKey='';
+if(gl){const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o};prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);uM=gl.getUniformLocation(prog,'uM');uT=gl.getUniformLocation(prog,'uT');
+ qb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,1,1,0,0,1,1,0,1]),gl.STATIC_DRAW)}
+function mkSet(P,C,n){const vao=gl.createVertexArray();gl.bindVertexArray(vao);gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+ const b1=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b1);gl.bufferData(gl.ARRAY_BUFFER,P,gl.STATIC_DRAW);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,4,gl.UNSIGNED_SHORT,false,0,0);gl.vertexAttribDivisor(1,1);
+ const b2=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b2);gl.bufferData(gl.ARRAY_BUFFER,C,gl.STATIC_DRAW);gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,4,gl.UNSIGNED_BYTE,true,0,0);gl.vertexAttribDivisor(2,1);
+ return{vao,b1,b2,n}}
+function mesh(g){const{W,H,L,d,pal}=g,S=W*L,wi=pal.indexOf('minecraft:water'),pt=TX.pt;let nO=0,nW=0,P=[null,null],C=[null,null];
+ for(let pass=0;pass<2;pass++){let o=0,w=0;
+  if(pass){P=[new Uint16Array(nO*4),new Uint16Array(nW*4)];C=[new Uint8Array(nO*4),new Uint8Array(nW*4)]}
+  for(let y=0;y<H;y++)for(let z=0;z<L;z++)for(let x=0;x<W;x++){const k=x+z*W+y*S,b=d[k];if(!b)continue;const isW=b===wi,
+   nb=[x+1<W?d[k+1]:0,x>0?d[k-1]:0,y+1<H?d[k+S]:0,y>0?d[k-S]:1,z+1<L?d[k+W]:0,z>0?d[k-W]:0];let cs;
+   for(let f=0;f<6;f++){const n=nb[f];if(!(n===0||(!isW&&n===wi)))continue;
+    if(!pass){isW?nW++:nO++;continue}
+    const t=isW?1:0,i=isW?w++:o++,p=P[t],c=C[t];p[i*4]=x;p[i*4+1]=y;p[i*4+2]=z;p[i*4+3]=f+8*(f===2?pt[b][0]:f===3?pt[b][2]:pt[b][1]);
+    if(cs===undefined)cs=isW?255:Math.round(255*(.86+hash(x,y*3+1,z)*.14));
+    c[i*4]=cs;c[i*4+1]=cs;c[i*4+2]=cs;c[i*4+3]=isW?170:255}}}
+ return{P,C,nO,nW}}
+async function show(){const g=G,{W,H,L}=g;await ensureTex(g);if(g!==G)return;let cnt=0;for(let i=0;i<g.d.length;i++)if(g.d[i])cnt++;
+ const sl=$('sl');sl.max=(L>=W?W:L)-1;if(+sl.value>+sl.max)sl.value=sl.max;side();drawEd();
+ let msg='';
+ if(gl){sets.forEach(s=>{gl.deleteVertexArray(s.vao);gl.deleteBuffer(s.b1);gl.deleteBuffer(s.b2)});sets=[];
+  if(g.d.length>3e7)msg=' · 3D-Vorschau für dieses Volumen deaktiviert';else{const m=mesh(g);
+   if(m.nO+m.nW>6e6)msg=' · zu viele Flächen für 3D';else{sets=[mkSet(m.P[0],m.C[0],m.nO),mkSet(m.P[1],m.C[1],m.nW)];msg=` · ${(m.nO+m.nW).toLocaleString('de')} Flächen`}}
+  const key=W+'x'+H+'x'+L;if(key!==lastKey){lastKey=key;resetCam()}dirty=true}
+ else msg=' · WebGL2 nicht verfügbar';
+ $('info').textContent=`${W} × ${H} × ${L} Blöcke · ${cnt.toLocaleString('de')} gesetzt · ${g.pal.length} Blockarten${msg}`}
+function resetCam(){const{W,H,L}=G;cam.t=[W/2,H/3,L/2];cam.dist=Math.max(W,L,H*1.5)*1.25+10;cam.yaw=.8;cam.pit=.55;dirty=true}
+const mul=(a,b)=>{const o=new Float32Array(16);for(let i=0;i<4;i++)for(let j=0;j<4;j++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+j]*b[i*4+k];o[i*4+j]=s}return o};
+function mvp(){const a=cv.width/cv.height,p=cam.pit,y=cam.yaw,t=cam.t,D=cam.dist,e=[t[0]+D*Math.cos(p)*Math.sin(y),t[1]+D*Math.sin(p),t[2]+D*Math.cos(p)*Math.cos(y)];
+ let z=[e[0]-t[0],e[1]-t[1],e[2]-t[2]];const n=Math.hypot(...z);z=z.map(q=>q/n);let x=[z[2],0,-z[0]];const m=Math.hypot(...x);x=x.map(q=>q/m);
+ const yy=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]],dt=(u,w)=>u[0]*w[0]+u[1]*w[1]+u[2]*w[2];
+ const V=new Float32Array([x[0],yy[0],z[0],0,x[1],yy[1],z[1],0,x[2],yy[2],z[2],0,-dt(x,e),-dt(yy,e),-dt(z,e),1]);
+ const f=1/Math.tan(.5),nr=Math.max(.2,D/400),fr=D*30+5000,Pm=new Float32Array([f/a,0,0,0,0,f,0,0,0,0,(fr+nr)/(nr-fr),-1,0,0,2*fr*nr/(nr-fr),0]);return mul(Pm,V)}
+function frame(){requestAnimationFrame(frame);if(!gl)return;const w=cv.clientWidth*devicePixelRatio|0,h=cv.clientHeight*devicePixelRatio|0;
+ if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;dirty=true}
+ if($('auto').checked&&!drag&&G){cam.yaw+=.004;dirty=true}if(!dirty)return;dirty=false;
+ gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(prog);gl.uniformMatrix4fv(uM,false,mvp());gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,TX.gt);gl.uniform1i(uT,0);gl.enable(gl.DEPTH_TEST);
+ sets.forEach((s,i)=>{if(!s.n)return;if(i){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false)}
+  gl.bindVertexArray(s.vao);gl.drawArraysInstanced(gl.TRIANGLES,0,6,s.n);if(i){gl.disable(gl.BLEND);gl.depthMask(true)}})}
+let drag=false;const ptr=new Map();let pinch=0;
+cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,e);drag=true;cv.style.cursor='grabbing'});
+cv.addEventListener('pointerup',e=>{ptr.delete(e.pointerId);if(!ptr.size){drag=false;cv.style.cursor='grab'}pinch=0});
+cv.addEventListener('pointermove',e=>{const p=ptr.get(e.pointerId);if(!p)return;const dx=e.clientX-p.clientX,dy=e.clientY-p.clientY;ptr.set(e.pointerId,e);
+ if(ptr.size===2){const[a,b]=[...ptr.values()],dd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);if(pinch)cam.dist=cl(cam.dist*pinch/dd,2,1e5);pinch=dd}
+ else if(e.shiftKey||e.buttons===2){const s=cam.dist*.0015;cam.t[0]-=Math.cos(cam.yaw)*dx*s;cam.t[2]+=Math.sin(cam.yaw)*dx*s;cam.t[1]+=dy*s}
+ else{cam.yaw-=dx*.006;cam.pit=cl(cam.pit+dy*.006,-.2,1.55)}dirty=true});
+cv.addEventListener('wheel',e=>{e.preventDefault();cam.dist=cl(cam.dist*Math.exp(e.deltaY*.0012),2,1e5);dirty=true},{passive:false});
+cv.addEventListener('contextmenu',e=>e.preventDefault());$('rst').onclick=()=>G&&resetCam();frame();
+// ---------- NBT / Export
+const enc=new TextEncoder();
+function NW(){const p=[],f={b(...a){p.push(Uint8Array.from(a))},s16(x){const t=new DataView(new ArrayBuffer(2));t.setInt16(0,x);p.push(new Uint8Array(t.buffer))},
+ i32(x){const t=new DataView(new ArrayBuffer(4));t.setInt32(0,x);p.push(new Uint8Array(t.buffer))},str(s){const e=enc.encode(s);f.s16(e.length);p.push(e)},raw(u){p.push(u)},tag(t,n){f.b(t);f.str(n)},p};return f}
+function schem(g,dv){const w=NW();w.tag(10,'Schematic');
+ w.tag(3,'Version');w.i32(2);w.tag(3,'DataVersion');w.i32(dv);w.tag(2,'Width');w.s16(g.W);w.tag(2,'Height');w.s16(g.H);w.tag(2,'Length');w.s16(g.L);
+ w.tag(3,'PaletteMax');w.i32(g.pal.length);w.tag(10,'Palette');g.pal.forEach((n,i)=>{w.tag(3,n);w.i32(i)});w.b(0);
+ const n=g.d.length;let bd;
+ if(g.pal.length<128){bd=new Uint8Array(n);for(let i=0;i<n;i++)bd[i]=g.d[i]}
+ else{const t=new Uint8Array(n*2);let k=0;for(let i=0;i<n;i++){let x=g.d[i];while(x>=128){t[k++]=x&127|128;x>>=7}t[k++]=x}bd=t.slice(0,k)}
+ w.tag(7,'BlockData');w.i32(bd.length);w.raw(bd);w.tag(11,'Offset');w.i32(3);w.i32(0);w.i32(0);w.i32(0);w.b(0);
+ const tot=w.p.reduce((a,b)=>a+b.length,0),out=new Uint8Array(tot);let o=0;for(const q of w.p){out.set(q,o);o+=q.length}return out}
+async function gz(u){const s=new Blob([u]).stream().pipeThrough(new CompressionStream('gzip'));return new Uint8Array(await new Response(s).arrayBuffer())}
+$('exp').onclick=async()=>{if(!G)return;$('info').textContent='Exportiere …';
+ try{const z=await gz(schem(G,v('ver'))),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([z]));
+  a.download=($('fn').value.trim()||'schematic').replace(/[^\w\-]/g,'_')+'.schem';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  $('info').textContent=`Gespeichert: ${a.download} (${(z.length/1024).toFixed(0)} KB)`}catch(e){$('info').textContent='Fehler: '+e.message}};
+// ---------- Plot-Terrain
+$('rp').innerHTML=rg('pb','Randbreite',4,200,60)+rg('prim','Höhenunterschied',2,120,16)+rg('ppy','Grundhöhe (Y)',2,120,10)+rg('pex','Luft darüber',4,60,14)+rg('pmoat','Graben (Wasser)',0,10,0)+rg('pun','Unruhe %',0,100,50);
+function plotCfg(){const pw=cl(v('pw'),4,2000),pl=cl(v('pl'),4,2000),b=v('pb'),P={dir:$('pdir').value,pw,pl,b,rim:v('prim'),py:v('ppy'),moat:Math.min(v('pmoat'),b-1),W:pw+2*b,L:pl+2*b,prof:$('ppf').value,shape:$('psh').value,un:v('pun')/100,open:{n:$('po_n').checked,s:$('po_s').checked,w:$('po_w').checked,e:$('po_e').checked}};
+ P.top=P.dir==='p'?P.py+P.rim:P.py;if(P.dir==='p')P.moat=0;P.H=cl(P.py+P.rim+v('pex'),8,384);$('ptot').textContent=P.W+' × '+P.L+' × '+P.H;return P}
+function plotH(P,x,z,n,rough,pd,i){const x0=P.b,x1=P.b+P.pw-1,z0=P.b,z1=P.b+P.pl-1;let d;
+ if(P.shape==='o'){const r=Math.hypot((x-(x0+x1)/2)/(P.pw/2),(z-(z0+z1)/2)/(P.pl/2));d=Math.max(0,r-1)*Math.min(P.pw,P.pl)/2}
+ else{let dx=Math.max(x0-x,x-x1,0),dz=Math.max(z0-z,z-z1,0);if(x<x0&&P.open.w)dx=0;if(x>x1&&P.open.e)dx=0;if(z<z0&&P.open.n)dz=0;if(z>z1&&P.open.s)dz=0;d=P.shape==='e'?Math.max(dx,dz):Math.hypot(dx,dz)}
+ pd[i]=d;if(d<=0)return P.top;
+ if(d<=P.moat)return P.py-4;
+ const bw=Math.max(1,P.b-P.moat);let t=cl((d-P.moat+(n-.5)*P.un*bw*.8)/bw,0,1),q;
+ if(P.prof==='l')q=t;else if(P.prof==='s')q=1-(1-Math.min(1,t*3.5))**2;else if(P.prof==='g')q=Math.pow(t,1.3);
+ else if(P.prof==='t'){const u=t*5,f=Math.floor(u),fr=cl((u-f-.6)/.4,0,1);q=(f+fr*fr*(3-2*fr))/5}else q=t*t*(3-2*t);
+ if(P.dir==='p')return Math.max(1,P.py+(1-q)*P.rim+4*q*(1-q)*(n-.5)*2*P.rim*.3*P.un*rough);
+ return Math.max(1,P.py+q*P.rim+q*(n-.5)*2*P.rim*.3*P.un*rough)}
+// ---------- Organische Custom-Bäume
+const STY={
+gnarled:{n:'Knorrige Eiche',ht:14,lr:4.5,tr:1.8,tt:.45,br:6,dr:15,rts:6,ld:85,lean:.08,wob:1.4,flare:1,brS:.35,brL:.55,up:.6,droop:.02,sub:2,flat:.3,hl:3,wood:'oak'},
+willow:{n:'Trauerweide',ht:16,lr:3.5,tr:1.6,tt:.5,br:8,dr:70,rts:4,ld:75,lean:.1,wob:1,flare:.8,brS:.5,brL:.6,up:.9,droop:.05,sub:2,flat:.2,hl:11,wood:'oak'},
+redwood:{n:'Mammutbaum',ht:44,lr:5,tr:2.6,tt:.15,br:22,dr:0,rts:6,ld:80,lean:0,wob:.4,flare:1.5,brS:.28,brL:.2,up:.3,droop:.03,sub:1,flat:.2,hl:0,wood:'spruce'},
+baobab:{n:'Baobab',ht:22,lr:8,tr:5,tt:.55,br:8,dr:5,rts:7,ld:75,lean:.05,wob:.8,flare:.6,brS:.7,brL:.45,up:.55,droop:.01,sub:1,flat:.75,hl:2,wood:'acacia'},
+world:{n:'Weltenbaum',ht:60,lr:14,tr:6,tt:.3,br:12,dr:30,rts:10,ld:70,lean:.02,wob:1.5,flare:1.6,brS:.45,brL:.42,up:.55,droop:.03,sub:2,flat:.45,hl:14,wood:'jungle',leaf:'moss'},
+bonsai:{n:'Kirsch-Bonsai',ht:12,lr:3.8,tr:1.3,tt:.5,br:5,dr:20,rts:4,ld:85,lean:.35,wob:2,flare:.8,brS:.4,brL:.6,up:.35,droop:.03,sub:1,flat:.8,hl:3,wood:'cherry'},
+umbrella:{n:'Schirmakazie',ht:13,lr:5.5,tr:1.4,tt:.5,br:3,dr:5,rts:3,ld:80,lean:.28,wob:1,flare:.5,brS:.6,brL:.5,up:.45,droop:0,sub:1,flat:.88,hl:1,wood:'acacia'},
+dead:{n:'Totbaum',ht:15,lr:1.8,tr:1.5,tt:.25,br:10,dr:0,rts:5,ld:20,lean:.1,wob:1.6,flare:1.2,brS:.3,brL:.5,up:.7,droop:.01,sub:3,flat:.4,hl:0,wood:'dark_oak'},
+mangrove:{n:'Mangrove (Stelzen)',ht:12,lr:4,tr:1.2,tt:.6,br:5,dr:10,rts:10,ld:80,lean:.1,wob:1,flare:.3,brS:.5,brL:.5,up:.6,droop:.02,sub:1,flat:.5,hl:4,wood:'mangrove',ra:4,rl:7},
+slender:{n:'Schlanke Birke',ht:18,lr:3.2,tr:1,tt:.6,br:9,dr:10,rts:3,ld:75,lean:.12,wob:1,flare:.4,brS:.4,brL:.3,up:.6,droop:.04,sub:1,flat:.2,hl:3,wood:'birch'},
+nether:{n:'Nether-Riese',ht:26,lr:8,tr:2.2,tt:.3,br:9,dr:40,rts:8,ld:75,lean:.15,wob:1.8,flare:1.2,brS:.45,brL:.5,up:.5,droop:.04,sub:2,flat:.5,hl:9,wood:'crimson'}};
+const LK={azalea:[['azalea_leaves',5],['flowering_azalea_leaves',3],['oak_leaves',2]],moss:[['oak_leaves',6],['moss_block',1]],cherry:[['cherry_leaves',1]],crimson:[['nether_wart_block',8],['shroomlight',1]],warped:[['warped_wart_block',8],['shroomlight',1]],snow:[['spruce_leaves',5],['snow_block',2]],crystal:[['amethyst_block',4],['calcite',1]]};
+function leafMix(k,w){if(k&&LK[k])return LK[k];if(w==='crimson'||w==='warped')return LK[w];return[[w+'_leaves',1]]}
+function ot(st,w,lk){const k='o_'+st+'_'+w+'_'+(lk||'');if(!TT[k])TT[k]={s:'o',st,wood:w,leaf:lk};return k}
+const AUTO={oak:['gnarled','oak'],birch:['slender','birch'],dark_oak:['gnarled','dark_oak'],spruce:['redwood','spruce'],jungle:['world','jungle'],acacia:['umbrella','acacia'],cherry:['bonsai','cherry'],mangrove:['mangrove','mangrove'],azalea:['gnarled','oak','azalea'],crimson:['gnarled','crimson'],warped:['gnarled','warped']};
+function mapTree(t,ts){if(!ts)return t;const c=TT[t];if(ts==='auto'){const a=AUTO[t];return a?ot(a[0],a[1],a[2]):t}if(!'bcf'.includes(c.s))return t;return ot(ts,c.lg.replace(/_(log|stem).*/,''),'')}
+function otree(g,S,wood,lk,x0,y0,z0,R){
+ const nz=wood==='crimson'||wood==='warped',LG=nz?[[wood+'_stem',6],[wood+'_hyphae',2],['stripped_'+wood+'_stem',1]]:[[wood+'_log',6],[wood+'_wood',2],['stripped_'+wood+'_log',1]],LF=leafMix(lk,wood);
+ const pick=a=>{let s=0;for(const q of a)s+=q[1];let r=R()*s;for(const q of a){r-=q[1];if(r<=0)return q[0]}return a[0][0]};
+ const leafIds=new Set(),LL=[],soft=k=>g.d[k]===0||leafIds.has(g.d[k]);
+ const lg=(x,y,z,ax,force)=>{x=Math.round(x);y=Math.round(y);z=Math.round(z);if(!g.inb(x,y,z))return;const k=g.ix(x,y,z);if(force||soft(k))g.d[k]=g.id(pick(LG)+'[axis='+ax+']')};
+ const lf=(x,y,z)=>{if(!g.inb(x,y,z))return false;const k=g.ix(x,y,z);if(g.d[k])return false;const n=pick(LF),i=g.id(/_leaves$/.test(n)?n+'[persistent=true]':n);g.d[k]=i;leafIds.add(i);return true};
+ const ball=(cx,cy,cz,r,ax,force)=>{if(r<.7){lg(cx,cy,cz,ax,force);return}const m=Math.ceil(r),bx=Math.round(cx),by=Math.round(cy),bz=Math.round(cz);for(let a=-m;a<=m;a++)for(let b=-m;b<=m;b++)for(let c=-m;c<=m;c++)if(a*a+b*b+c*c<=r*r+.3)lg(bx+a,by+b,bz+c,ax,force)};
+ const axOf=(dx,dy,dz)=>{const ax=Math.abs(dx),ay=Math.abs(dy),az=Math.abs(dz);return ay>=ax&&ay>=az?'y':ax>=az?'x':'z'};
+ const seg=(a,b,r0,r1)=>{const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],n=Math.max(1,Math.ceil(Math.hypot(dx,dy,dz)*1.5)),ax=axOf(dx,dy,dz);for(let i=0;i<=n;i++){const t=i/n;ball(a[0]+dx*t,a[1]+dy*t,a[2]+dz*t,r0+(r1-r0)*t,ax)}};
+ const ht=S.ht,LA=R()*6.283,p1=R()*6.283,p2=R()*6.283,dd=S.droop+S.dr/100*.05;
+ const tp=t=>[x0+Math.cos(LA)*S.lean*ht*t*t+S.wob*Math.sin(t*6+p1)*t,y0+t*ht,z0+Math.sin(LA)*S.lean*ht*t*t+S.wob*Math.sin(t*5+p2)*t];
+ const tr=t=>S.tr*(1-(1-S.tt)*Math.pow(t,.9))*(1+S.flare*Math.max(0,1-t*8));
+ const N=Math.ceil(ht*1.5),TP=[];for(let i=0;i<=N;i++)TP.push(tp(i/N));
+ for(let i=1;i<=N;i++)seg(TP[i-1],TP[i],tr((i-1)/N),tr(i/N));
+ const CL=[];
+ const branch=(p,d,len,r,depth)=>{const q=p.slice(),n=Math.max(2,Math.round(len));
+  for(let s=0;s<=n;s++){const rr=Math.max(.5,r*(1-.7*s/n));ball(q[0],q[1],q[2],rr,axOf(d[0],d[1],d[2]));
+   if(depth<S.sub&&s>2&&s<n-1&&s%4===0&&R()<.65){const a=R()*6.283,e=.2+R()*.6;branch(q,[Math.cos(a)*Math.cos(e),Math.sin(e),Math.sin(a)*Math.cos(e)],(n-s)*.7,rr*.7,depth+1)}
+   q[0]+=d[0]*.85;q[1]+=d[1]*.85;q[2]+=d[2]*.85;d[1]-=dd*.5;const m=Math.hypot(d[0],d[1],d[2]);d[0]/=m;d[1]/=m;d[2]/=m}
+  CL.push({p:q,r:S.lr*(.55+R()*.5)*(1-depth*.18)})};
+ for(let i=0;i<S.br;i++){const t=S.brS+(1-S.brS)*(i+R()*.8)/S.br,pt=TP[Math.min(N,Math.floor(t*N))],az=i*2.39996+R()*.5,up=S.up+(R()-.5)*.3,
+  d=[Math.cos(az)*Math.cos(up),Math.sin(up),Math.sin(az)*Math.cos(up)],len=S.brL*ht*(1-.35*t)*(.7+R()*.6);branch(pt.slice(),d,len,tr(t)*.6+.3,0)}
+ const top=TP[N];CL.push({p:[top[0],top[1]+S.lr*.3,top[2]],r:S.lr*1.1});
+ for(const c of CL){const rx=c.r,ry=Math.max(1,c.r*(1-.65*S.flat)),m=Math.ceil(rx),my=Math.ceil(ry),cx=Math.round(c.p[0]),cy=Math.round(c.p[1]),cz=Math.round(c.p[2]),ld=S.ld/100;
+  for(let a=-m;a<=m;a++)for(let b=-my;b<=my;b++)for(let e=-m;e<=m;e++){const d2=a*a/(rx*rx)+b*b/(ry*ry)+e*e/(rx*rx),h1=hash(cx+a,cy+b+e*131,7),h2=hash(cx+a,cy+b*3,e+11);
+   if(d2+(h1-.5)*.6<1&&h2<ld+.15&&lf(cx+a,cy+b,cz+e))LL.push(g.ix(cx+a,cy+b,cz+e))}}
+ if(S.dr>0&&S.hl>0){const W=g.W,S2=W*g.L;for(const k of LL){if(R()>S.dr/100*.5)continue;const y=Math.floor(k/S2),r=k%S2,z=Math.floor(r/W),x=r%W,len=1+Math.floor(R()*S.hl);for(let j=1;j<=len;j++)if(!lf(x,y-j,z))break}}
+ const rl=S.rl||S.tr*2.2+ht*.15,ra=S.ra||S.tr*.9,nr=Math.round(S.rts);
+ for(let i=0;i<nr;i++){const az=i*6.283/nr+R()*.5,c=Math.cos(az),s=Math.sin(az),n=Math.ceil(rl*1.3);
+  for(let j=0;j<=n;j++){const dist=j/n*rl,f=1-dist/rl,px=x0+c*(dist+S.tr*.5),pz=z0+s*(dist+S.tr*.5),py=y0+ra*Math.pow(f,1.5)-.4-Math.max(0,dist/rl-.6)*2,rr=Math.max(.6,S.tr*.55*f+.4);
+   ball(px,py,pz,rr,Math.abs(c)>Math.abs(s)?'x':'z',true)}}
+}
+$('tt').innerHTML='<optgroup label="Custom-Bäume">'+Object.keys(STY).map(k=>`<option value="s:${k}">${STY[k].n}</option>`).join('')+'</optgroup><optgroup label="Blockbäume &amp; Objekte">'+Object.keys(TN).map(k=>`<option value="${k}">${TN[k]}</option>`).join('')+'</optgroup>';
+$('tstyle').innerHTML='<option value="">Block-Bäume (Biom-Standard)</option><option value="auto">Custom-Bäume (nach Biom)</option>'+Object.keys(STY).map(k=>`<option value="${k}">${STY[k].n}</option>`).join('');
+function applyStyle(){const t=$('tt').value;if(!t.startsWith('s:'))return;const S=STY[t.slice(2)],set=(id,val)=>{$(id).value=val;$(id+'v').textContent=val};set('th',S.ht);set('tc',S.lr);set('tr',S.tr);set('br',S.br);set('dr',S.dr);set('rts',S.rts);set('ld',S.ld);$('mw').value='';$('ml').value=''}
+$('tt').addEventListener('input',applyStyle);applyStyle();
+// ---------- Texturen (MC-Assets)
+async function readZip(file){const buf=new Uint8Array(await file.arrayBuffer()),dv=new DataView(buf.buffer);let e=buf.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('Kein ZIP/JAR');
+ const n=dv.getUint16(e+10,true);let p=dv.getUint32(e+16,true);const m={};
+ for(let i=0;i<n;i++){const meth=dv.getUint16(p+10,true),cs=dv.getUint32(p+20,true),nl=dv.getUint16(p+28,true),xl=dv.getUint16(p+30,true),cm=dv.getUint16(p+32,true),off=dv.getUint32(p+42,true),name=new TextDecoder().decode(buf.subarray(p+46,p+46+nl));p+=46+nl+xl+cm;
+  const q=name.match(/assets\/minecraft\/textures\/block\/([^/]+)\.png$/);if(q)m[q[1]]={meth,cs,off}}
+ return async name=>{const f=m[name];if(!f)return null;const nl=dv.getUint16(f.off+26,true),xl=dv.getUint16(f.off+28,true),st=f.off+30+nl+xl;let data=buf.subarray(st,st+f.cs);
+  if(f.meth===8)data=new Uint8Array(await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer());
+  return createImageBitmap(new Blob([data],{type:'image/png'}))}}
+const loadImg=name=>{if(TX.imgs.has(name))return TX.imgs.get(name);const pr=(async()=>{try{if(TX.src==='none')return null;if(TX.src==='file')return TX.zip?await TX.zip(name):null;
+ return await new Promise(r=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>r(i);i.onerror=()=>r(null);i.src=`https://raw.githubusercontent.com/InventivetalentDev/minecraft-assets/${TX.ver}/assets/minecraft/textures/block/${name}.png`})}catch(e){return null}})();TX.imgs.set(name,pr);return pr};
+const TINT={g:[145,189,89],f:[119,171,47],b:[128,167,85],s:[97,153,97],w:[63,118,228]};
+function texNames(n){let t=n,s=n,b=n,tint=null,m;
+ if(n==='grass_block'){t='grass_block_top';s='grass_block_side';b='dirt';tint='g'}
+ else if(n==='podzol'||n==='mycelium'){t=n+'_top';s=n+'_side';b='dirt'}
+ else if(/^(crimson|warped)_nylium$/.test(n)){s=n+'_side';b='netherrack'}
+ else if(n==='sandstone'||n==='red_sandstone'){t=n+'_top';b=n+'_bottom'}
+ else if(n==='cactus'){t='cactus_top';s='cactus_side';b='cactus_bottom'}
+ else if(/_(log|stem)$/.test(n)){t=b=n+'_top'}
+ else if(m=n.match(/^(.*)_wood$/)){t=s=b=m[1]+'_log'}
+ else if(m=n.match(/^(.*)_hyphae$/)){t=s=b=m[1]+'_stem'}
+ else if(n==='basalt'||n==='bone_block'){t=b=n+'_top';s=n+'_side'}
+ else if(n==='blackstone'||n==='deepslate'){t=b=n+'_top'}
+ else if(n==='magma_block')t=s=b='magma';
+ else if(n==='snow_block')t=s=b='snow';
+ else if(n==='water'){t=s=b='water_still';tint='w'}
+ else if(n==='lava')t=s=b='lava_still';
+ else if(n==='bamboo')t=s=b='bamboo_stalk';
+ if(/_leaves$/.test(n))tint=/^birch/.test(n)?'b':/^spruce/.test(n)?'s':/^(cherry|azalea|flowering)/.test(n)?null:'f';
+ return{t,s,b,tint}}
+async function paintTile(nm,k,idx){const c=document.createElement('canvas');c.width=c.height=16;const x=c.getContext('2d',{willReadFrequently:true});x.imageSmoothingEnabled=false;
+ const im=await loadImg(nm);let d;const get=img=>{x.clearRect(0,0,16,16);x.drawImage(img,0,0,img.width,img.width,0,0,16,16);return x.getImageData(0,0,16,16)};
+ if(im){d=get(im);const tn=(dd,t)=>{for(let i=0;i<1024;i+=4){dd.data[i]=dd.data[i]*t[0]/255;dd.data[i+1]=dd.data[i+1]*t[1]/255;dd.data[i+2]=dd.data[i+2]*t[2]/255}};
+  if(k==='grs'){const ov=await loadImg('grass_block_side_overlay');if(ov){const o=get(ov);tn(o,TINT.g);const t2=document.createElement('canvas');t2.width=t2.height=16;t2.getContext('2d').putImageData(o,0,0);x.putImageData(d,0,0);x.drawImage(t2,0,0);d=x.getImageData(0,0,16,16)}}
+  else if(k)tn(d,TINT[k]);
+  if(/_leaves$/.test(nm)){let r=0,g2=0,b=0,n=0;for(let i=0;i<1024;i+=4)if(d.data[i+3]>=128){r+=d.data[i];g2+=d.data[i+1];b+=d.data[i+2];n++}n=n||1;for(let i=0;i<1024;i+=4)if(d.data[i+3]<128){d.data[i]=r/n*.35;d.data[i+1]=g2/n*.35;d.data[i+2]=b/n*.35;d.data[i+3]=255}}}
+ else{const cc=COL[nm.replace(/_(top|side|bottom)$/,'')]||guess(nm);d=x.createImageData(16,16);for(let i=0;i<1024;i+=4){const j=.9+hash(i,idx,5)*.2;d.data[i]=cc[0]*j;d.data[i+1]=cc[1]*j;d.data[i+2]=cc[2]*j;d.data[i+3]=255}}
+ let r=0,g2=0,b=0;for(let i=0;i<1024;i+=4){r+=d.data[i];g2+=d.data[i+1];b+=d.data[i+2]}TX.tav[idx]=[r/256,g2/256,b/256];
+ x.putImageData(d,0,0);TX.cx.drawImage(c,(idx%32)*16,Math.floor(idx/32)*16)}
+async function ensureTex(g){
+ TX.src=$('tsrc').value;TX.ver=$('tver').value;const sig=TX.src+TX.ver+TX.zipName;
+ if(sig!==TX.sig){TX.sig=sig;TX.imgs.clear();TX.tiles.clear();TX.tileN=0;TX.avg={};TX.tav=[];TX.ok=0;TX.tot=0;TX.cv=null}
+ if(!TX.cv){TX.cv=document.createElement('canvas');TX.cv.width=TX.cv.height=512;TX.cx=TX.cv.getContext('2d')}
+ const fresh=[],T=(nm,k)=>{const key=nm+'|'+k;if(!TX.tiles.has(key)){TX.tiles.set(key,TX.tileN++);fresh.push([nm,k,TX.tiles.get(key)])}return TX.tiles.get(key)};
+ TX.pt=g.pal.map((p,i)=>{if(!i)return[0,0,0];const q=texNames(p.replace('minecraft:','').split('[')[0]),k=q.tint||'';return q.tint==='g'?[T(q.t,'g'),T('grass_block_side','grs'),T(q.b,'')]:[T(q.t,k),T(q.s,k),T(q.b,k)]});
+ if(fresh.length||!TX.gt){if(fresh.length)$('tst').textContent='Lade Texturen …';
+  const names=[...new Set(fresh.flatMap(f=>f[1]==='grs'?[f[0],'grass_block_side_overlay']:[f[0]]))],res=await Promise.all(names.map(loadImg));TX.ok+=res.filter(Boolean).length;TX.tot+=names.length;
+  for(const[nm,k,idx]of fresh)await paintTile(nm,k,idx);
+  if(gl){if(!TX.gt)TX.gt=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,TX.gt);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,TX.cv);
+   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE)}}
+ g.pal.forEach((p,i)=>{if(i)TX.avg[p.replace('minecraft:','').split('[')[0]]=TX.tav[TX.pt[i][0]]});
+ $('tst').textContent=TX.src==='none'?'Nur Farben':TX.src==='file'&&!TX.zip?'Bitte JAR / Resource-Pack wählen':`${TX.ok}/${TX.tot} Texturen geladen`+(TX.tot&&!TX.ok?' – nicht erreichbar, Farben als Ersatz (Tipp: eigene Minecraft-JAR wählen)':'')}
+$('tsrc').onchange=()=>{const s=$('tsrc').value;$('tvr').classList.toggle('hide',s!=='gh');$('tfr').classList.toggle('hide',s!=='file')};
+$('tfile').onchange=async e=>{const f=e.target.files[0];if(!f)return;$('tst').textContent='Lese '+f.name+' …';try{TX.zip=await readZip(f);TX.zipName=f.name+f.size;go()}catch(err){$('tst').textContent='Fehler: '+err.message}};
+// ---------- Gelände-Editor
+const SC={W:0,L:0,a:null};let LH=null,view=null,undo=[],ED={es:1,ew:1,eh:1,q:0},line0=null;
+function sculptFor(W,L){if(SC.W!==W||SC.L!==L){const n=new Float32Array(W*L);if(SC.a)for(let z=0;z<L;z++)for(let x=0;x<W;x++)n[z*W+x]=SC.a[Math.floor(z*SC.L/L)*SC.W+Math.floor(x*SC.W/W)];SC.a=n;SC.W=W;SC.L=L;undo.length=0}return SC.a}
+const HYP=[[0,[40,110,60]],[.35,[110,160,70]],[.55,[175,150,90]],[.75,[130,110,95]],[1,[250,250,250]]];
+function hyp(t){t=cl(t,0,1);for(let i=1;i<HYP.length;i++)if(t<=HYP[i][0]){const a=HYP[i-1],b=HYP[i],u=(t-a[0])/(b[0]-a[0]);return a[1].map((q,j)=>q+(b[1][j]-q)*u)}return HYP[4][1]}
+function drawEd(){if(!LH||!view)return;const{W,L,H}=LH,es=Math.min(1,1200/Math.max(W,L)),ew=Math.max(1,Math.round(W*es)),eh=Math.max(1,Math.round(L*es)),cv=$('ed');
+ ED.es=es;ED.ew=ew;ED.eh=eh;cv.width=ew;cv.height=eh;const x=cv.getContext('2d'),im=x.createImageData(ew,eh);
+ for(let py=0;py<eh;py++)for(let px=0;px<ew;px++){const gx=Math.min(W-1,Math.floor(px/es)),gz=Math.min(L-1,Math.floor(py/es)),h=view[gz*W+gx],o=(py*ew+px)*4;let c;
+  if(LH.wl>=0&&h<=LH.wl)c=[40+h/H*60,90+h/H*60,190];else{c=hyp(h/(H-1));const n=view[Math.max(0,gz-1)*W+Math.max(0,gx-1)],f=1+cl((h-n)*.12,-.4,.4);c=c.map(q=>q*f)}
+  im.data[o]=c[0];im.data[o+1]=c[1];im.data[o+2]=c[2];im.data[o+3]=255}
+ x.putImageData(im,0,0)}
+const redraw=()=>{if(!ED.q){ED.q=1;requestAnimationFrame(()=>{ED.q=0;drawEd()})}};
+function edPos(e){const cv=$('ed'),r=cv.getBoundingClientRect(),s=Math.min(r.width/cv.width,r.height/cv.height),ox=(r.width-cv.width*s)/2,oy=(r.height-cv.height*s)/2;return[((e.clientX-r.left-ox)/s)/ED.es,((e.clientY-r.top-oy)/s)/ED.es]}
+const NEG={tal:1,krater:1,schlucht:1},LINE={grat:1,schlucht:1},BR=['hoch','tief','glatt','eben'];
+function prof(t,d){if(d>=1)return 0;switch(t){case'berg':return(1-d)**1.5;case'huegel':return .5+.5*Math.cos(Math.PI*d);case'plateau':return d<.55?1:(1-(d-.55)/.45)**2;case'vulkan':return(1-d)**1.2*(d<.22?.55+.45*d/.22:1);case'pyramide':return 1-d;case'ziggurat':return Math.ceil((1-d)*7)/7;case'nadel':return(1-d)**3.5;case'turm':return d<.6?1:0;case'tal':return .5+.5*Math.cos(Math.PI*d);case'krater':return d<.75?1-(d/.75)**2:-.25*Math.sin(Math.PI*(d-.75)/.25);case'grat':return(1-d)**1.2;case'schlucht':return d<.4?1:(1-(d-.4)/.6)**.8}return 0}
+const addD=(i,dv)=>{SC.a[i]+=dv;view[i]+=dv};
+function stamp(t,x0,z0,x1,z1,R,A){const W=LH.W,L=LH.L,sg=NEG[t]?-1:1,sq=t==='pyramide'||t==='ziggurat'||t==='turm',pt=x0===x1&&z0===z1||!LINE[t];
+ for(let z=Math.max(0,Math.floor(Math.min(z0,z1)-R));z<=Math.min(L-1,Math.max(z0,z1)+R);z++)for(let x=Math.max(0,Math.floor(Math.min(x0,x1)-R));x<=Math.min(W-1,Math.max(x0,x1)+R);x++){let d;
+  if(pt){const dx=x-x0,dz=z-z0;d=(sq?Math.max(Math.abs(dx),Math.abs(dz)):Math.hypot(dx,dz))/R}
+  else{const vx=x1-x0,vz=z1-z0,u=cl(((x-x0)*vx+(z-z0)*vz)/(vx*vx+vz*vz),0,1);d=Math.hypot(x-x0-vx*u,z-z0-vz*u)/R}
+  const p=prof(t,d);if(p)addD(z*W+x,sg*A*p)}}
+function brush(t,gx,gz,R,A){const W=LH.W,L=LH.L;
+ for(let z=Math.max(0,Math.floor(gz-R));z<=Math.min(L-1,gz+R);z++)for(let x=Math.max(0,Math.floor(gx-R));x<=Math.min(W-1,gx+R);x++){const d=Math.hypot(x-gx,z-gz)/R;if(d>=1)continue;const w=1-d*d,i=z*W+x;
+  if(t==='hoch')addD(i,A*.08*w);else if(t==='tief')addD(i,-A*.08*w);else if(t==='eben')addD(i,(A-view[i])*.4*w);
+  else{let s=0,c=0;for(let a=-2;a<=2;a++)for(let b=-2;b<=2;b++){const xx=x+a,zz=z+b;if(xx>=0&&zz>=0&&xx<W&&zz<L){s+=view[zz*W+xx];c++}}addD(i,(s/c-view[i])*.5*w)}}}
+const edc=$('ed');let edDown=false;
+const pushUndo=()=>{undo.push([SC.a.slice(),view.slice()]);if(undo.length>(SC.a.length>2e6?3:12))undo.shift()};
+edc.addEventListener('pointerdown',e=>{if(!LH||!SC.a||$('mode').value==='b')return;edc.setPointerCapture(e.pointerId);edDown=true;pushUndo();const[gx,gz]=edPos(e),t=$('tool').value,R=v('ebr'),A=v('eba');
+ if(LINE[t])line0=[gx,gz];else if(BR.includes(t))brush(t,gx,gz,R,A);else stamp(t,gx,gz,gx,gz,R,A);redraw()});
+edc.addEventListener('pointermove',e=>{if(!edDown)return;const t=$('tool').value;if(BR.includes(t)){const[gx,gz]=edPos(e);brush(t,gx,gz,v('ebr'),v('eba'));redraw()}});
+edc.addEventListener('pointerup',e=>{if(!edDown)return;edDown=false;const t=$('tool').value,[gx,gz]=edPos(e);if(LINE[t]&&line0){stamp(t,line0[0],line0[1],gx,gz,v('ebr'),v('eba'));line0=null;redraw()}go()});
+$('eundo').onclick=()=>{const u=undo.pop();if(!u)return;SC.a.set(u[0]);view.set(u[1]);redraw();go()};
+$('eclr').onclick=()=>{if(!SC.a)return;pushUndo();SC.a.fill(0);go()};
+// ---------- UI
+let tm;function go(){clearTimeout(tm);$('info').textContent='Generiere …';tm=setTimeout(()=>{try{G=$('mode').value==='b'?genSingle():genTerrain();show().catch(e=>{$('info').textContent='Fehler: '+e.message;console.error(e)})}catch(e){$('info').textContent='Fehler: '+e.message}},250)}
+document.querySelectorAll('aside input[type=range]').forEach(r=>r.addEventListener('input',()=>{$(r.id+'v').textContent=r.value}));
+document.querySelector('aside').addEventListener('input',e=>{if(e.target.id!=='fn'&&e.target.id!=='ver')go()});
+$('sl').oninput=side;$('dice').onclick=()=>{$('seed').value=Math.floor(Math.random()*1e6);go()};
+$('chaos').onclick=()=>{$('seed').value=Math.floor(Math.random()*1e6);document.querySelectorAll('#frm input').forEach(i=>i.checked=Math.random()<.5);$('wild').value=40+Math.floor(Math.random()*55);$('wildv').textContent=$('wild').value;go()};
+$('ball').onclick=()=>{document.querySelectorAll('#bio input').forEach(i=>i.checked=true);go()};$('bnone').onclick=()=>{document.querySelectorAll('#bio input').forEach(i=>i.checked=false);go()};
+$('dim').onchange=()=>{bioUI();go()};
+$('mode').onchange=()=>{const m=$('mode').value;$('tp').classList.toggle('hide',m==='b');$('bp').classList.toggle('hide',m!=='b');$('szf').classList.toggle('hide',m!=='t');$('pf').classList.toggle('hide',m!=='p');$('edbox').classList.toggle('hide',m==='b');$('fn').value=m==='t'?'mein_terrain':m==='p'?'mein_plot':'mein_objekt';go()};
+bioUI();go();
+</script></body></html>
