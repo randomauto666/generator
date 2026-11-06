@@ -1,22 +1,42 @@
 <!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MC Generator Pro</title>
 <style>
-:root{--bg:#f4f4f2;--pn:#fff;--tx:#1d1d1b;--mu:#6b6b66;--bd:#d8d8d2;--ac:#2f7d3a}
-@media(prefers-color-scheme:dark){:root{--bg:#161715;--pn:#20221f;--tx:#e8e8e3;--mu:#9a9a92;--bd:#34362f;--ac:#5fb86b}}
-*{box-sizing:border-box}body{margin:0;font:14px system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;min-height:100vh}
-aside{width:340px;flex:none;padding:12px;background:var(--pn);border-right:1px solid var(--bd);overflow:auto;height:100vh;position:sticky;top:0}
-main{flex:1;padding:12px;min-width:0}h1{font-size:17px;margin:0 0 8px}
-fieldset{border:1px solid var(--bd);border-radius:8px;margin:0 0 8px;padding:6px 10px}legend{font-size:12px;color:var(--mu);padding:0 4px}
-.r{display:grid;grid-template-columns:100px 1fr 40px;gap:6px;align-items:center;margin:3px 0}.r label{color:var(--mu)}.r b{font-weight:500;text-align:right}
-input[type=number],select,input[type=text]{width:100%;padding:5px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx)}
-input[type=range]{width:100%;accent-color:var(--ac)}.n3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.n3 label{font-size:12px;color:var(--mu)}
-.chk{display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:13px}#bio{max-height:190px;overflow:auto;grid-template-columns:1fr}
-button{padding:7px 11px;border:0;border-radius:6px;background:var(--ac);color:#fff;font-weight:600;cursor:pointer}button.s{background:var(--bd);color:var(--tx);padding:4px 8px;font-weight:500}
-#wrap{position:relative;height:62vh;border-radius:10px;overflow:hidden;background:linear-gradient(#5d8fd6,#bcd7f0 70%,#e6eef5)}
+:root{color-scheme:light dark;--bg:#f2f3f0;--pn:#fff;--tx:#1b1d1a;--mu:#6a6f66;--bd:#d9dcd5;--ac:#3a8f47;--in:#f6f7f4;--sh:0 1px 3px #0003}
+@media(prefers-color-scheme:dark){:root{--bg:#121311;--pn:#1c1e1b;--tx:#e9ebe5;--mu:#9aa092;--bd:#33362f;--ac:#5fb86b;--in:#252823;--sh:0 1px 3px #0008}}
+*{box-sizing:border-box}
+body{margin:0;font:13.5px/1.35 system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--tx);display:flex;min-height:100vh}
+aside{width:350px;flex:none;padding:14px 12px 28px;background:var(--pn);border-right:1px solid var(--bd);overflow:auto;height:100vh;position:sticky;top:0;scrollbar-width:thin}
+main{flex:1;padding:14px;min-width:0}
+h1{font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+fieldset{border:0;background:var(--bg);border-radius:10px;margin:0 0 10px;padding:10px 12px 8px;min-width:0}
+legend{float:left;width:100%;padding:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);cursor:pointer;user-select:none;display:flex;justify-content:space-between}
+legend::after{content:'▾'}fieldset.col legend::after{content:'▸'}fieldset.col>*:not(legend){display:none}legend+*{clear:both}
+.r{display:grid;grid-template-columns:100px 1fr 38px;gap:8px;align-items:center;margin:5px 0}
+.r label{color:var(--mu);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r b{font-weight:600;text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums}
+input[type=number],input[type=text],select{width:100%;padding:6px 8px;border:1px solid var(--bd);border-radius:7px;background:var(--in);color:var(--tx);font:inherit;min-width:0}
+select{appearance:none;-webkit-appearance:none;padding-right:24px;text-overflow:ellipsis;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23999' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+:focus-visible{outline:2px solid var(--ac);outline-offset:1px}
+input[type=checkbox]{accent-color:var(--ac);width:15px;height:15px;margin:0}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:20px;background:transparent;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;background:linear-gradient(to right,var(--ac) var(--p,50%),var(--bd) var(--p,50%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;margin-top:-5px;border-radius:50%;background:var(--pn);border:2px solid var(--ac);box-shadow:var(--sh)}
+input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:var(--bd)}
+input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--ac)}
+input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--pn);border:2px solid var(--ac)}
+.n3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.n3 label{display:block;font-size:11.5px;color:var(--mu);margin-bottom:3px}
+.chk{display:grid;grid-template-columns:1fr 1fr;gap:2px;font-size:13px}.chk label{display:flex;align-items:center;gap:7px;padding:3px 5px;border-radius:6px;cursor:pointer}.chk label:hover{background:var(--in)}
+#bio{max-height:200px;overflow:auto;grid-template-columns:1fr;margin-top:6px;scrollbar-width:thin}
+button{padding:8px 12px;border:0;border-radius:8px;background:var(--ac);color:#fff;font:inherit;font-weight:600;cursor:pointer}button:hover{filter:brightness(1.1)}
+button.s{background:var(--in);color:var(--tx);border:1px solid var(--bd);padding:5px 10px;font-weight:500}
+#wrap{position:relative;height:62vh;border-radius:12px;overflow:hidden;background:linear-gradient(#5d8fd6,#bcd7f0 70%,#e6eef5);box-shadow:var(--sh)}
 #gl{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
-#ov{position:absolute;left:8px;top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}#ov label{background:#0007;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px}
-#hl{position:absolute;right:8px;bottom:6px;font-size:11px;color:#fff;text-shadow:0 0 3px #000}
-.box{background:var(--pn);border:1px solid var(--bd);border-radius:8px;padding:8px;margin-top:10px}.box h2{font-size:12px;color:var(--mu);font-weight:500;margin:0 0 6px}
-#side{width:100%;image-rendering:pixelated;display:block}#info{color:var(--mu);font-size:13px;margin-top:8px}.hide{display:none}
+#ov{position:absolute;left:10px;top:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#ov label{background:#000a;color:#fff;padding:5px 10px;border-radius:8px;font-size:12px;display:flex;gap:6px;align-items:center}#ov button{background:#000a;padding:5px 10px;font-size:12px}
+#hl{position:absolute;right:10px;bottom:8px;font-size:11px;color:#fff;text-shadow:0 0 3px #000}
+.box{background:var(--pn);border:1px solid var(--bd);border-radius:12px;padding:10px 12px;margin-top:12px}
+.box h2{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu);font-weight:600;margin:0 0 8px}
+.tb{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:8px}.tb label{display:flex;gap:8px;align-items:center;color:var(--mu)}.tb input[type=range]{width:130px}.tb b{min-width:28px;color:var(--tx);text-align:right}
+#side{width:100%;image-rendering:pixelated;display:block}#info{color:var(--mu);font-size:13px;margin-top:10px}.hide{display:none}
 @media(max-width:800px){body{flex-direction:column}aside{width:100%;height:auto;position:static}}
 </style></head><body>
 <aside>
@@ -35,7 +55,7 @@ button{padding:7px 11px;border:0;border-radius:6px;background:var(--ac);color:#f
 <div class="chk" style="margin-top:4px"><label><input type="checkbox" id="po_n"> Norden offen</label><label><input type="checkbox" id="po_s"> Süden offen</label><label><input type="checkbox" id="po_w"> Westen offen</label><label><input type="checkbox" id="po_e"> Osten offen</label></div></fieldset>
 <fieldset><legend>Seed</legend><div style="display:flex;gap:6px"><input type="number" id="seed" value="1234"><button class="s" id="dice">🎲</button><button class="s" id="chaos">🌀 Chaos</button></div></fieldset>
 <fieldset><legend>Texturen (echte Minecraft-Blöcke)</legend>
-<div class="r"><label>Quelle</label><select id="tsrc" style="grid-column:span 2"><option value="gh">Auto: Minecraft-Assets (GitHub)</option><option value="file">Eigene JAR / Resource-Pack</option><option value="none">Keine (nur Farben)</option></select></div>
+<div class="r"><label>Quelle</label><select id="tsrc" style="grid-column:span 2"><option value="gh">Auto (GitHub-Assets)</option><option value="file">Eigene JAR / Pack</option><option value="none">Nur Farben</option></select></div>
 <div class="r" id="tvr"><label>Version</label><select id="tver" style="grid-column:span 2"><option>1.21.10</option><option>1.21.4</option><option>1.20.4</option><option>1.19.4</option></select></div>
 <div class="r hide" id="tfr"><input type="file" id="tfile" accept=".jar,.zip" style="grid-column:span 3"></div>
 <div id="tst" style="font-size:12px;color:var(--mu)"></div></fieldset>
@@ -63,10 +83,10 @@ button{padding:7px 11px;border:0;border-radius:6px;background:var(--ac);color:#f
 <div id="wrap"><canvas id="gl"></canvas><div id="ov"><label><input type="checkbox" id="auto" checked> Auto-Drehung</label><button class="s" id="rst">Ansicht zurücksetzen</button></div>
 <div id="hl">Ziehen: drehen · Shift/Rechtsklick: verschieben · Mausrad: Zoom</div></div>
 <div class="box" id="edbox"><h2>Gelände zeichnen – Berge, Täler, alles frei (Linien-Werkzeuge: ziehen)</h2>
-<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:6px">
+<div class="tb">
 <select id="tool" style="width:auto"><optgroup label="Stempel (Klick)"><option value="berg">Berg (Kegel)</option><option value="huegel">Hügel (rund)</option><option value="plateau">Plateau / Mesa</option><option value="vulkan">Vulkan</option><option value="pyramide">Pyramide</option><option value="ziggurat">Stufenpyramide</option><option value="nadel">Felsnadel</option><option value="turm">Turm / Säule</option><option value="tal">Tal (Mulde)</option><option value="krater">Krater</option></optgroup><optgroup label="Linie (ziehen)"><option value="grat">Gebirgskamm</option><option value="schlucht">Schlucht</option></optgroup><optgroup label="Pinsel (malen)"><option value="hoch">Anheben</option><option value="tief">Absenken</option><option value="glatt">Glätten</option><option value="eben">Einebnen (Höhe = Wert)</option></optgroup></select>
-<label>Radius <input type="range" id="ebr" min="2" max="300" value="25" style="width:110px"></label>
-<label>Höhe/Stärke <input type="range" id="eba" min="1" max="160" value="24" style="width:110px"></label>
+<label>Radius <input type="range" id="ebr" min="2" max="300" value="25"><b id="ebrv">25</b></label>
+<label>Höhe/Stärke <input type="range" id="eba" min="1" max="160" value="24"><b id="ebav">24</b></label>
 <button class="s" id="eundo">↶ Zurück</button><button class="s" id="eclr">Zeichnung löschen</button></div>
 <canvas id="ed" style="width:100%;max-height:50vh;object-fit:contain;image-rendering:pixelated;touch-action:none;cursor:crosshair;display:block;background:#0003;border-radius:6px"></canvas>
 <div style="font-size:12px;color:var(--mu);margin-top:4px">Tipp: links „Flach starten“ aktivieren und nur eigene Formen zeichnen. Im End wirkt die Zeichnung nicht (dort Inseln).</div></div>
@@ -81,7 +101,7 @@ $('rbio').innerHTML=rg('bsize','Biomgröße',20,300,70);
 $('rw').innerHTML=rg('wild','Wildheit',0,100,60);
 $('rt').innerHTML=rg('scale','Geländegröße',8,200,36)+rg('rough','Zerklüftung',0,2,1,.05)+rg('wl','Flüssigkeit %',0,60,25)+`<div class="r"><label>Flach starten</label><input type="checkbox" id="flat"></div>`+rg('basey','Basishöhe %',0,100,30);
 $('rtr').innerHTML=rg('tdens','Dichte ×',0,4,1,.1)+rg('tmin','Höhe min',3,40,5)+rg('tmax','Höhe max',3,40,10)+`<div class="r"><label>Baumstil</label><select id="tstyle" style="grid-column:span 2"></select></div>`;
-$('rb').innerHTML=rg('th','Höhe',3,80,12)+rg('tc','Radius/Krone',1,15,3)+'<div id="rc">'+rg('tr','Stammradius',.5,8,1.8,.1)+rg('br','Äste',2,22,6)+rg('dr','Hängen %',0,100,15)+rg('rts','Wurzeln',0,12,5)+rg('ld','Blattdichte %',20,100,85)+
+$('rb').innerHTML=rg('th','Höhe',3,80,12)+rg('tc','Radius/Krone',1,15,3)+'<div id="rc">'+rg('tr','Stammradius',.5,8,1.8,.1)+rg('br','Äste',2,22,6)+rg('dr','Hängen %',0,100,15)+rg('rts','Wurzeln',0,12,5)+rg('ld','Blattdichte %',20,100,85)+rg('det','Details %',0,100,40)+
 `<div class="r"><label>Holz</label><select id="mw" style="grid-column:span 2"><option value="">Stil-Standard</option>${['oak','spruce','birch','jungle','acacia','dark_oak','mangrove','cherry','crimson','warped'].map(w=>`<option>${w}</option>`).join('')}</select></div><div class="r"><label>Laub</label><select id="ml" style="grid-column:span 2"><option value="">Holzart-Standard</option><option value="azalea">Azalee-Mix</option><option value="moss">Moos-Mix</option><option value="cherry">Kirsche</option><option value="crimson">Karmesin</option><option value="warped">Wirr</option><option value="snow">Schnee</option><option value="crystal">Kristall</option></select></div></div>`;
 const FORMS={warp:'Wirbel-Verzerrung',terr:'Terrassen',spike:'Spitzen & Säulen',crat:'Krater',wave:'Wellen & Dünen',col:'Basalt-Raster',cave:'Höhlen & Bögen',isl:'Schwebeinseln',fant:'Fantasy-Farben'};
 $('frm').innerHTML=Object.keys(FORMS).map(k=>`<label><input type="checkbox" value="${k}" ${k=='warp'?'checked':''}> ${FORMS[k]}</label>`).join('');
@@ -188,7 +208,7 @@ function tree(g,t,x,y,z,ht,cr,th,R){
   for(let i=0;i<a0;i++)T(x,y+i,z);for(let i=a0;i<ht;i++)T(x+dx,y+i,z+dz)}
 }
 function genSingle(){const t=$('tt').value,R=rng(v('seed')),gr=$('tg').checked;
- if(t.startsWith('s:')){const B=STY[t.slice(2)],S=Object.assign({},B,{ht:v('th'),lr:v('tc'),tr:v('tr'),br:v('br'),dr:v('dr'),rts:v('rts'),ld:v('ld')}),w=$('mw').value||B.wood,
+ if(t.startsWith('s:')){const B=STY[t.slice(2)],S=Object.assign({},B,{ht:v('th'),lr:v('tc'),tr:v('tr'),br:v('br'),dr:v('dr'),rts:v('rts'),ld:v('ld'),det:v('det')}),w=$('mw').value||B.wood,
   e=Math.ceil(Math.max(S.brL*S.ht*Math.cos(S.up)*1.35+S.lr*1.5+S.lean*S.ht+S.wob+3,(S.rl||S.tr*2.2+S.ht*.15)+S.tr+3)),W=2*e+1,H=Math.ceil(S.ht+S.brL*S.ht*Math.sin(S.up)*1.3+S.lr*1.6)+7+(gr?1:0),g=new Grid(W,H,W);
   if(gr){const id=g.id(w==='crimson'?'crimson_nylium':w==='warped'?'warped_nylium':'grass_block');for(let i=0;i<W*W;i++)g.d[i]=id}
   otree(g,S,w,$('ml').value||B.leaf||'',e,gr?1:0,e,R);return g}
@@ -252,7 +272,7 @@ function genTerrain(){
  LH={W,L,H,wl,h:hh};view=Float32Array.from(hh);
  return g}
 // ---------- Seitenschnitt
-let G=null;function guess(n){if(/leaves/.test(n))return[60,120,40];if(/(log|wood|stem|hyphae)/.test(n))return[100,80,50];if(/wart/.test(n))return[120,15,15];return[150,150,150]}
+let G=null;function guess(n){if(/leaves/.test(n))return[60,120,40];if(/planks|stairs|slab|fence/.test(n))return[160,130,80];if(/(log|wood|stem|hyphae)/.test(n))return[100,80,50];if(/wart/.test(n))return[120,15,15];return[150,150,150]}
 const cn=n=>{const b=n.replace('minecraft:','').split('[')[0];return TX.avg[b]||COL[b]||guess(b)};
 function side(){if(!G)return;const g=G,{W,H,L}=g,S=W*L,d=g.d,pc=g.pal.map(cn),zl=L>=W,hl=zl?L:W,s=+$('sl').value,cv=$('side');cv.width=hl;cv.height=H;
  const cx=cv.getContext('2d'),im=cx.createImageData(hl,H);
@@ -262,38 +282,49 @@ function side(){if(!G)return;const g=G,{W,H,L}=g,S=W*L,d=g.d,pc=g.pal.map(cn),zl
 const cv=$('gl'),gl=cv.getContext('webgl2',{alpha:true,premultipliedAlpha:false,antialias:true});
 const VS=`#version 300 es
 precision highp float;
-layout(location=0)in vec2 aU;layout(location=1)in vec4 aP;layout(location=2)in vec4 aC;uniform mat4 uM;out vec4 vC;out vec3 vT;
+layout(location=0)in vec2 aU;layout(location=1)in vec4 aP;layout(location=2)in vec4 aC;layout(location=3)in vec4 aLo;layout(location=4)in vec4 aHi;uniform mat4 uM;out vec4 vC;out vec3 vT;
 void main(){float f=mod(aP.w,8.),tl=floor(aP.w/8.);vec2 q=aU;
 vec3 o=f<.5?vec3(1,q.y,q.x):f<1.5?vec3(0,q.y,1.-q.x):f<2.5?vec3(q.x,1,q.y):f<3.5?vec3(q.x,0,q.y):f<4.5?vec3(1.-q.x,q.y,1):vec3(q.x,q.y,0);
-float s=f<1.5?.78:f<2.5?1.:f<3.5?.5:.64;vec2 uv=(f>1.5&&f<3.5)?q:vec2(q.x,1.-q.y);
-vT=vec3(uv,tl);vC=vec4(aC.rgb*s,aC.a);gl_Position=uM*vec4(aP.xyz+o,1);}`;
+float s=f<1.5?.78:f<2.5?1.:f<3.5?.5:.64;vec3 L=(aLo.xyz+o*(aHi.xyz-aLo.xyz))/16.;vec2 uv=f<.5?vec2(L.z,1.-L.y):f<1.5?vec2(1.-L.z,1.-L.y):f<3.5?vec2(L.x,L.z):f<4.5?vec2(1.-L.x,1.-L.y):vec2(L.x,1.-L.y);
+vT=vec3(uv,tl);vC=vec4(aC.rgb*s,aC.a);gl_Position=uM*vec4(aP.xyz+L,1);}`;
 const FS=`#version 300 es
 precision mediump float;precision mediump sampler2DArray;uniform sampler2DArray uT;in vec4 vC;in vec3 vT;out vec4 o;void main(){vec4 t=texture(uT,vT);o=vec4(min(t.rgb*vC.rgb*1.12,1.),vC.a);}`;
 const TX={sig:'',imgs:new Map(),tiles:new Map(),tileN:0,avg:{},tav:[],pt:[[0,0,0]],gt:null,src:'gh',ver:'1.21.10',zip:null,zipName:'',ok:0,tot:0,pix:[]};
 let prog,uM,uT,qb,sets=[],cam={yaw:.8,pit:.55,dist:100,t:[0,0,0]},dirty=true,lastKey='';
 if(gl){const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o};prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);uM=gl.getUniformLocation(prog,'uM');uT=gl.getUniformLocation(prog,'uT');
  qb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,1,1,0,0,1,1,0,1]),gl.STATIC_DRAW)}
-function mkSet(P,C,n){const vao=gl.createVertexArray();gl.bindVertexArray(vao);gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
- const b1=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b1);gl.bufferData(gl.ARRAY_BUFFER,P,gl.STATIC_DRAW);gl.enableVertexAttribArray(1);gl.vertexAttribPointer(1,4,gl.UNSIGNED_SHORT,false,0,0);gl.vertexAttribDivisor(1,1);
- const b2=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b2);gl.bufferData(gl.ARRAY_BUFFER,C,gl.STATIC_DRAW);gl.enableVertexAttribArray(2);gl.vertexAttribPointer(2,4,gl.UNSIGNED_BYTE,true,0,0);gl.vertexAttribDivisor(2,1);
- return{vao,b1,b2,n}}
-function mesh(g){const{W,H,L,d,pal}=g,S=W*L,wi=pal.indexOf('minecraft:water'),pt=TX.pt;let nO=0,nW=0,P=[null,null],C=[null,null];
- for(let pass=0;pass<2;pass++){let o=0,w=0;
-  if(pass){P=[new Uint16Array(nO*4),new Uint16Array(nW*4)];C=[new Uint8Array(nO*4),new Uint8Array(nW*4)]}
+function mkSet(P,C,n,LO,HI){const vao=gl.createVertexArray();gl.bindVertexArray(vao);gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.enableVertexAttribArray(0);gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+ const bufs=[],att=(loc,data,type,norm)=>{const b=gl.createBuffer();bufs.push(b);gl.bindBuffer(gl.ARRAY_BUFFER,b);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,4,type,norm,0,0);gl.vertexAttribDivisor(loc,1)};
+ att(1,P,gl.UNSIGNED_SHORT,false);att(2,C,gl.UNSIGNED_BYTE,true);if(LO){att(3,LO,gl.UNSIGNED_BYTE,false);att(4,HI,gl.UNSIGNED_BYTE,false)}
+ return{vao,bufs,n,part:!!LO}}
+function boxesFor(p){const m=p.match(/^minecraft:(\w+?)_(stairs|slab|fence)(?:\[(.*)\])?$/);if(!m)return null;const st={};(m[3]||'').split(',').forEach(q=>{const a=q.split('=');st[a[0]]=a[1]});
+ if(m[2]==='slab'){if(st.type==='double')return null;return[st.type==='top'?[0,8,0,16,16,16]:[0,0,0,16,8,16]]}
+ if(m[2]==='stairs'){const top=st.half==='top',lo=top?[0,8,0,16,16,16]:[0,0,0,16,8,16],y0=top?0:8,y1=top?8:16,f=st.facing;
+  return[lo,f==='east'?[0,y0,0,8,y1,16]:f==='west'?[8,y0,0,16,y1,16]:f==='south'?[0,y0,0,16,y1,8]:[0,y0,8,16,y1,16]]}
+ const b=[[6,0,6,10,16,10]],arm=(x0,z0,x1,z1)=>{b.push([x0,6,z0,x1,9,z1]);b.push([x0,12,z0,x1,15,z1])};
+ if(st.north==='true')arm(7,0,9,6);if(st.south==='true')arm(7,10,9,16);if(st.east==='true')arm(10,7,16,9);if(st.west==='true')arm(0,7,6,9);return b}
+function mesh(g){const{W,H,L,d,pal}=g,S=W*L,wi=pal.indexOf('minecraft:water'),pt=TX.pt,bx=pal.map(boxesFor),pp=bx.map(a=>a?1:0);let nO=0,nW=0,nP=0,P=[null,null,null],C=[null,null,null],LO,HI;
+ for(let pass=0;pass<2;pass++){let o=0,w=0,q=0;
+  if(pass){P=[new Uint16Array(nO*4),new Uint16Array(nW*4),new Uint16Array(nP*4)];C=[new Uint8Array(nO*4),new Uint8Array(nW*4),new Uint8Array(nP*4)];LO=new Uint8Array(nP*4);HI=new Uint8Array(nP*4)}
   for(let y=0;y<H;y++)for(let z=0;z<L;z++)for(let x=0;x<W;x++){const k=x+z*W+y*S,b=d[k];if(!b)continue;const isW=b===wi,
-   nb=[x+1<W?d[k+1]:0,x>0?d[k-1]:0,y+1<H?d[k+S]:0,y>0?d[k-S]:1,z+1<L?d[k+W]:0,z>0?d[k-W]:0];let cs;
-   for(let f=0;f<6;f++){const n=nb[f];if(!(n===0||(!isW&&n===wi)))continue;
+   nb=[x+1<W?d[k+1]:0,x>0?d[k-1]:0,y+1<H?d[k+S]:0,y>0?d[k-S]:65535,z+1<L?d[k+W]:0,z>0?d[k-W]:0];let cs;
+   if(pp[b]){for(const bb of bx[b])for(let f=0;f<6;f++){const edge=f===0?bb[3]===16:f===1?bb[0]===0:f===2?bb[4]===16:f===3?bb[1]===0:f===4?bb[5]===16:bb[2]===0,n=nb[f];
+     if(edge&&n&&!pp[n]&&n!==wi)continue;if(!pass){nP++;continue}
+     const i=q++,p=P[2],c=C[2];p[i*4]=x;p[i*4+1]=y;p[i*4+2]=z;p[i*4+3]=f+8*pt[b][f];if(cs===undefined)cs=Math.round(255*(.86+hash(x,y*3+1,z)*.14));
+     c[i*4]=cs;c[i*4+1]=cs;c[i*4+2]=cs;c[i*4+3]=255;LO[i*4]=bb[0];LO[i*4+1]=bb[1];LO[i*4+2]=bb[2];HI[i*4]=bb[3];HI[i*4+1]=bb[4];HI[i*4+2]=bb[5]}
+    continue}
+   for(let f=0;f<6;f++){const n=nb[f];if(!(n===0||pp[n]||(!isW&&n===wi)))continue;
     if(!pass){isW?nW++:nO++;continue}
     const t=isW?1:0,i=isW?w++:o++,p=P[t],c=C[t];p[i*4]=x;p[i*4+1]=y;p[i*4+2]=z;p[i*4+3]=f+8*pt[b][f];
     if(cs===undefined)cs=isW?255:Math.round(255*(.86+hash(x,y*3+1,z)*.14));
     c[i*4]=cs;c[i*4+1]=cs;c[i*4+2]=cs;c[i*4+3]=isW?170:255}}}
- return{P,C,nO,nW}}
-async function show(){const g=G,{W,H,L}=g;await ensureTex(g);if(g!==G)return;let cnt=0;for(let i=0;i<g.d.length;i++)if(g.d[i])cnt++;
+ return{P,C,nO,nW,nP,LO,HI}}
+async function show(){const g=G,{W,H,L}=g;await ensureTex(g);updAll();if(g!==G)return;let cnt=0;for(let i=0;i<g.d.length;i++)if(g.d[i])cnt++;
  const sl=$('sl');sl.max=(L>=W?W:L)-1;if(+sl.value>+sl.max)sl.value=sl.max;side();drawEd();
  let msg='';
- if(gl){sets.forEach(s=>{gl.deleteVertexArray(s.vao);gl.deleteBuffer(s.b1);gl.deleteBuffer(s.b2)});sets=[];
+ if(gl){sets.forEach(s=>{gl.deleteVertexArray(s.vao);s.bufs.forEach(b=>gl.deleteBuffer(b))});sets=[];
   if(g.d.length>3e7)msg=' · 3D-Vorschau für dieses Volumen deaktiviert';else{const m=mesh(g);
-   if(m.nO+m.nW>6e6)msg=' · zu viele Flächen für 3D';else{sets=[mkSet(m.P[0],m.C[0],m.nO),mkSet(m.P[1],m.C[1],m.nW)];msg=` · ${(m.nO+m.nW).toLocaleString('de')} Flächen`}}
+   if(m.nO+m.nW+m.nP>6e6)msg=' · zu viele Flächen für 3D';else{sets=[mkSet(m.P[0],m.C[0],m.nO),mkSet(m.P[2],m.C[2],m.nP,m.LO,m.HI),mkSet(m.P[1],m.C[1],m.nW)];msg=` · ${(m.nO+m.nW+m.nP).toLocaleString('de')} Flächen`}}
   const key=W+'x'+H+'x'+L;if(key!==lastKey){lastKey=key;resetCam()}dirty=true}
  else msg=' · WebGL2 nicht verfügbar';
  $('info').textContent=`${W} × ${H} × ${L} Blöcke · ${cnt.toLocaleString('de')} gesetzt · ${g.pal.length} Blockarten${msg}`}
@@ -308,8 +339,9 @@ function frame(){requestAnimationFrame(frame);if(!gl)return;const w=cv.clientWid
  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;dirty=true}
  if($('auto').checked&&!drag&&G){cam.yaw+=.004;dirty=true}if(!dirty)return;dirty=false;
  gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(prog);gl.uniformMatrix4fv(uM,false,mvp());gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D_ARRAY,TX.gt);gl.uniform1i(uT,0);gl.enable(gl.DEPTH_TEST);
- sets.forEach((s,i)=>{if(!s.n)return;if(i){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false)}
-  gl.bindVertexArray(s.vao);gl.drawArraysInstanced(gl.TRIANGLES,0,6,s.n);if(i){gl.disable(gl.BLEND);gl.depthMask(true)}})}
+ sets.forEach((s,i)=>{if(!s.n)return;const wt=i===2;if(wt){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false)}
+  if(!s.part){gl.vertexAttrib4f(3,0,0,0,0);gl.vertexAttrib4f(4,16,16,16,0)}
+  gl.bindVertexArray(s.vao);gl.drawArraysInstanced(gl.TRIANGLES,0,6,s.n);if(wt){gl.disable(gl.BLEND);gl.depthMask(true)}})}
 let drag=false;const ptr=new Map();let pinch=0;
 cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);ptr.set(e.pointerId,e);drag=true;cv.style.cursor='grabbing'});
 cv.addEventListener('pointerup',e=>{ptr.delete(e.pointerId);if(!ptr.size){drag=false;cv.style.cursor='grab'}pinch=0});
@@ -369,12 +401,12 @@ function ot(st,w,lk){const k='o_'+st+'_'+w+'_'+(lk||'');if(!TT[k])TT[k]={s:'o',s
 const AUTO={oak:['gnarled','oak'],birch:['slender','birch'],dark_oak:['gnarled','dark_oak'],spruce:['redwood','spruce'],jungle:['world','jungle'],acacia:['umbrella','acacia'],cherry:['bonsai','cherry'],mangrove:['mangrove','mangrove'],azalea:['gnarled','oak','azalea'],crimson:['gnarled','crimson'],warped:['gnarled','warped']};
 function mapTree(t,ts){if(!ts)return t;const c=TT[t];if(ts==='auto'){const a=AUTO[t];return a?ot(a[0],a[1],a[2]):t}if(!'bcf'.includes(c.s))return t;return ot(ts,c.lg.replace(/_(log|stem).*/,''),'')}
 function otree(g,S,wood,lk,x0,y0,z0,R){
- const nz=wood==='crimson'||wood==='warped',LG=nz?[[wood+'_stem',6],[wood+'_hyphae',2],['stripped_'+wood+'_stem',1]]:[[wood+'_log',6],[wood+'_wood',2],['stripped_'+wood+'_log',1]],LF=leafMix(lk,wood);
+ const nz=wood==='crimson'||wood==='warped',LG=nz?[[wood+'_stem',6],[wood+'_hyphae',2],['stripped_'+wood+'_stem',1]]:[[wood+'_log',6],[wood+'_wood',2],['stripped_'+wood+'_log',1]],WD=nz?[[wood+'_hyphae',7],['stripped_'+wood+'_hyphae',1]]:[[wood+'_wood',7],['stripped_'+wood+'_wood',1]],LF=leafMix(lk,wood),dtl=(S.det===undefined?40:S.det)/100,WL=[],TIPS=[];
  const pick=a=>{let s=0;for(const q of a)s+=q[1];let r=R()*s;for(const q of a){r-=q[1];if(r<=0)return q[0]}return a[0][0]};
  const leafIds=new Set(),LL=[],soft=k=>g.d[k]===0||leafIds.has(g.d[k]);
- const lg=(x,y,z,ax,force)=>{x=Math.round(x);y=Math.round(y);z=Math.round(z);if(!g.inb(x,y,z))return;const k=g.ix(x,y,z);if(force||soft(k))g.d[k]=g.id(pick(LG)+'[axis='+ax+']')};
+ const lg=(x,y,z,ax,force,wd)=>{x=Math.round(x);y=Math.round(y);z=Math.round(z);if(!g.inb(x,y,z))return;const k=g.ix(x,y,z);if(force||soft(k)){g.d[k]=g.id(wd?pick(WD)+'[axis=y]':pick(LG)+'[axis='+ax+']');WL.push(k)}};
  const lf=(x,y,z)=>{if(!g.inb(x,y,z))return false;const k=g.ix(x,y,z);if(g.d[k])return false;const n=pick(LF),i=g.id(/_leaves$/.test(n)?n+'[persistent=true]':n);g.d[k]=i;leafIds.add(i);return true};
- const ball=(cx,cy,cz,r,ax,force)=>{if(r<.7){lg(cx,cy,cz,ax,force);return}const m=Math.ceil(r),bx=Math.round(cx),by=Math.round(cy),bz=Math.round(cz);for(let a=-m;a<=m;a++)for(let b=-m;b<=m;b++)for(let c=-m;c<=m;c++)if(a*a+b*b+c*c<=r*r+.3)lg(bx+a,by+b,bz+c,ax,force)};
+ const ball=(cx,cy,cz,r,ax,force,wd)=>{if(r<.7){lg(cx,cy,cz,ax,force);return}const w2=wd&&r>=1.2,m=Math.ceil(r),bx=Math.round(cx),by=Math.round(cy),bz=Math.round(cz);for(let a=-m;a<=m;a++)for(let b=-m;b<=m;b++)for(let c=-m;c<=m;c++)if(a*a+b*b+c*c<=r*r+.3)lg(bx+a,by+b,bz+c,ax,force,w2)};
  const axOf=(dx,dy,dz)=>{const ax=Math.abs(dx),ay=Math.abs(dy),az=Math.abs(dz);return ay>=ax&&ay>=az?'y':ax>=az?'x':'z'};
  const seg=(a,b,r0,r1)=>{const dx=b[0]-a[0],dy=b[1]-a[1],dz=b[2]-a[2],n=Math.max(1,Math.ceil(Math.hypot(dx,dy,dz)*1.5)),ax=axOf(dx,dy,dz);for(let i=0;i<=n;i++){const t=i/n;ball(a[0]+dx*t,a[1]+dy*t,a[2]+dz*t,r0+(r1-r0)*t,ax)}};
  const ht=S.ht,LA=R()*6.283,p1=R()*6.283,p2=R()*6.283,dd=S.droop+S.dr/100*.05;
@@ -384,13 +416,15 @@ function otree(g,S,wood,lk,x0,y0,z0,R){
  for(let i=1;i<=N;i++)seg(TP[i-1],TP[i],tr((i-1)/N),tr(i/N));
  const CL=[];
  const branch=(p,d,len,r,depth)=>{const q=p.slice(),n=Math.max(2,Math.round(len));
-  for(let s=0;s<=n;s++){const rr=Math.max(.5,r*(1-.7*s/n));ball(q[0],q[1],q[2],rr,axOf(d[0],d[1],d[2]));
+  for(let s=0;s<=n;s++){const rr=Math.max(.5,r*(1-.7*s/n));ball(q[0],q[1],q[2],rr,axOf(d[0],d[1],d[2]),false,true);
    if(depth<S.sub&&s>2&&s<n-1&&s%4===0&&R()<.65){const a=R()*6.283,e=.2+R()*.6;branch(q,[Math.cos(a)*Math.cos(e),Math.sin(e),Math.sin(a)*Math.cos(e)],(n-s)*.7,rr*.7,depth+1)}
    q[0]+=d[0]*.85;q[1]+=d[1]*.85;q[2]+=d[2]*.85;d[1]-=dd*.5;const m=Math.hypot(d[0],d[1],d[2]);d[0]/=m;d[1]/=m;d[2]/=m}
-  CL.push({p:q,r:S.lr*(.55+R()*.5)*(1-depth*.18)})};
+  TIPS.push({p:q.slice(),d:d.slice()});CL.push({p:q,r:S.lr*(.55+R()*.5)*(1-depth*.18)})};
  for(let i=0;i<S.br;i++){const t=S.brS+(1-S.brS)*(i+R()*.8)/S.br,pt=TP[Math.min(N,Math.floor(t*N))],az=i*2.39996+R()*.5,up=S.up+(R()-.5)*.3,
   d=[Math.cos(az)*Math.cos(up),Math.sin(up),Math.sin(az)*Math.cos(up)],len=S.brL*ht*(1-.35*t)*(.7+R()*.6);branch(pt.slice(),d,len,tr(t)*.6+.3,0)}
  const top=TP[N];CL.push({p:[top[0],top[1]+S.lr*.3,top[2]],r:S.lr*1.1});
+ const WW=g.W,SS=g.W*g.L,FN=wood+'_fence',FL=[],fence=(x,y,z)=>{if(!g.inb(x,y,z))return false;const k=g.ix(x,y,z);if(g.d[k])return false;g.d[k]=g.id(FN);FL.push(k);return true};
+ if(dtl>0)for(const t of TIPS){if(R()>dtl*1.2)continue;const n=1+Math.floor(R()*3);for(let j=1;j<=n;j++)if(!fence(Math.round(t.p[0]+t.d[0]*j),Math.round(t.p[1]+t.d[1]*j),Math.round(t.p[2]+t.d[2]*j)))break}
  for(const c of CL){const rx=c.r,ry=Math.max(1,c.r*(1-.65*S.flat)),m=Math.ceil(rx),my=Math.ceil(ry),cx=Math.round(c.p[0]),cy=Math.round(c.p[1]),cz=Math.round(c.p[2]),ld=S.ld/100;
   for(let a=-m;a<=m;a++)for(let b=-my;b<=my;b++)for(let e=-m;e<=m;e++){const d2=a*a/(rx*rx)+b*b/(ry*ry)+e*e/(rx*rx),h1=hash(cx+a,cy+b+e*131,7),h2=hash(cx+a,cy+b*3,e+11);
    if(d2+(h1-.5)*.6<1&&h2<ld+.15&&lf(cx+a,cy+b,cz+e))LL.push(g.ix(cx+a,cy+b,cz+e))}}
@@ -398,11 +432,20 @@ function otree(g,S,wood,lk,x0,y0,z0,R){
  const rl=S.rl||S.tr*2.2+ht*.15,ra=S.ra||S.tr*.9,nr=Math.round(S.rts);
  for(let i=0;i<nr;i++){const az=i*6.283/nr+R()*.5,c=Math.cos(az),s=Math.sin(az),n=Math.ceil(rl*1.3);
   for(let j=0;j<=n;j++){const dist=j/n*rl,f=1-dist/rl,px=x0+c*(dist+S.tr*.5),pz=z0+s*(dist+S.tr*.5),py=y0+ra*Math.pow(f,1.5)-.4-Math.max(0,dist/rl-.6)*2,rr=Math.max(.6,S.tr*.55*f+.4);
-   ball(px,py,pz,rr,Math.abs(c)>Math.abs(s)?'x':'z',true)}}
+   ball(px,py,pz,rr,Math.abs(c)>Math.abs(s)?'x':'z',true,true)}}
+ if(dtl>0){const ST=wood+'_stairs',SL=wood+'_slab',isW=k=>/_(log|wood|stem|hyphae)\[/.test(g.pal[g.d[k]]||''),dirs=[[1,0,'east'],[-1,0,'west'],[0,1,'south'],[0,-1,'north']];
+  for(const k of WL){if(!isW(k))continue;const y=Math.floor(k/SS),r=k%SS,z=Math.floor(r/WW),x=r%WW;
+   if(y<=y0+S.tr*2.5+3&&y+1<g.H&&g.d[k+SS]===0){const cs=dirs.filter(a=>{const nx=x+a[0],nz=z+a[1];return g.inb(nx,y-1,nz)&&g.d[g.ix(nx,y,nz)]===0&&g.d[g.ix(nx,y-1,nz)]!==0});
+    if(cs.length===1&&R()<dtl*.9){g.d[k]=g.id(ST+'[facing='+cs[0][2]+',half=bottom,shape=straight,waterlogged=false]');continue}}
+   if(y+1<g.H&&g.d[k+SS]===0&&R()<dtl*.04)g.d[k+SS]=g.id(SL+'[type=bottom,waterlogged=false]');
+   if(y>y0+ht*.35&&y>0&&g.d[k-SS]===0&&R()<dtl*.03){const n=1+Math.floor(R()*3);for(let j=1;j<=n;j++)if(!fence(x,y-j,z))break}}
+  const cn2=(nx,ny,nz)=>{if(!g.inb(nx,ny,nz))return false;const q=g.d[g.ix(nx,ny,nz)];if(!q)return false;const n=g.pal[q];return n.includes('_fence')||/_(log|wood|stem|hyphae)\[/.test(n)};
+  for(const k of FL){const y=Math.floor(k/SS),r=k%SS,z=Math.floor(r/WW),x=r%WW;g.d[k]=g.id(FN+'[east='+cn2(x+1,y,z)+',north='+cn2(x,y,z-1)+',south='+cn2(x,y,z+1)+',waterlogged=false,west='+cn2(x-1,y,z)+']')}}
+
 }
 $('tt').innerHTML='<optgroup label="Custom-Bäume">'+Object.keys(STY).map(k=>`<option value="s:${k}">${STY[k].n}</option>`).join('')+'</optgroup><optgroup label="Blockbäume &amp; Objekte">'+Object.keys(TN).map(k=>`<option value="${k}">${TN[k]}</option>`).join('')+'</optgroup>';
 $('tstyle').innerHTML='<option value="">Block-Bäume (Biom-Standard)</option><option value="auto">Custom-Bäume (nach Biom)</option>'+Object.keys(STY).map(k=>`<option value="${k}">${STY[k].n}</option>`).join('');
-function applyStyle(){const t=$('tt').value;if(!t.startsWith('s:'))return;const S=STY[t.slice(2)],set=(id,val)=>{$(id).value=val;$(id+'v').textContent=val};set('th',S.ht);set('tc',S.lr);set('tr',S.tr);set('br',S.br);set('dr',S.dr);set('rts',S.rts);set('ld',S.ld);$('mw').value='';$('ml').value=''}
+function applyStyle(){const t=$('tt').value;if(!t.startsWith('s:'))return;const S=STY[t.slice(2)],set=(id,val)=>{$(id).value=val;$(id+'v').textContent=val};set('th',S.ht);set('tc',S.lr);set('tr',S.tr);set('br',S.br);set('dr',S.dr);set('rts',S.rts);set('ld',S.ld);set('det',40);$('mw').value='';$('ml').value=''}
 $('tt').addEventListener('input',applyStyle);applyStyle();
 // ---------- Texturen (MC-Assets)
 async function readZip(file){const buf=new Uint8Array(await file.arrayBuffer()),dv=new DataView(buf.buffer);let e=buf.length-22;while(e>=0&&dv.getUint32(e,true)!==0x06054b50)e--;if(e<0)throw new Error('Kein ZIP/JAR');
@@ -421,6 +464,7 @@ function texNames(n){let t=n,s=n,b=n,tint=null,m;
  else if(/^(crimson|warped)_nylium$/.test(n)){s=n+'_side';b='netherrack'}
  else if(n==='sandstone'||n==='red_sandstone'){t=n+'_top';b=n+'_bottom'}
  else if(n==='cactus'){t='cactus_top';s='cactus_side';b='cactus_bottom'}
+ else if(m=n.match(/^(.*)_(stairs|slab|fence)$/)){t=s=b=m[1]+'_planks'}
  else if(/_(log|stem)$/.test(n)){t=b=n+'_top'}
  else if(m=n.match(/^(.*)_wood$/)){t=s=b=m[1]+'_log'}
  else if(m=n.match(/^(.*)_hyphae$/)){t=s=b=m[1]+'_stem'}
@@ -494,6 +538,12 @@ edc.addEventListener('pointermove',e=>{if(!edDown)return;const t=$('tool').value
 edc.addEventListener('pointerup',e=>{if(!edDown)return;edDown=false;const t=$('tool').value,[gx,gz]=edPos(e);if(LINE[t]&&line0){stamp(t,line0[0],line0[1],gx,gz,v('ebr'),v('eba'));line0=null;redraw()}go()});
 $('eundo').onclick=()=>{const u=undo.pop();if(!u)return;SC.a.set(u[0]);view.set(u[1]);redraw();go()};
 $('eclr').onclick=()=>{if(!SC.a)return;pushUndo();SC.a.fill(0);go()};
+const upd=r=>r.style.setProperty('--p',(r.value-r.min)/(r.max-r.min)*100+'%');
+function updAll(){document.querySelectorAll('input[type=range]').forEach(upd)}
+document.addEventListener('input',e=>{if(e.target.type==='range')upd(e.target)});
+['ebr','eba'].forEach(id=>$(id).addEventListener('input',()=>{$(id+'v').textContent=$(id).value}));
+document.querySelectorAll('aside legend').forEach(l=>l.onclick=()=>l.parentNode.classList.toggle('col'));
+updAll();
 // ---------- UI
 let tm;function go(){clearTimeout(tm);$('info').textContent='Generiere …';tm=setTimeout(()=>{try{G=$('mode').value==='b'?genSingle():genTerrain();show().catch(e=>{$('info').textContent='Fehler: '+e.message;console.error(e)})}catch(e){$('info').textContent='Fehler: '+e.message}},250)}
 document.querySelectorAll('aside input[type=range]').forEach(r=>r.addEventListener('input',()=>{$(r.id+'v').textContent=r.value}));
