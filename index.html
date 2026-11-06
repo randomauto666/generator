@@ -262,14 +262,14 @@ function side(){if(!G)return;const g=G,{W,H,L}=g,S=W*L,d=g.d,pc=g.pal.map(cn),zl
 const cv=$('gl'),gl=cv.getContext('webgl2',{alpha:true,premultipliedAlpha:false,antialias:true});
 const VS=`#version 300 es
 precision highp float;
-layout(location=0)in vec2 aU;layout(location=1)in vec4 aP;layout(location=2)in vec4 aC;uniform mat4 uM;out vec4 vC;out vec2 vT;
+layout(location=0)in vec2 aU;layout(location=1)in vec4 aP;layout(location=2)in vec4 aC;uniform mat4 uM;out vec4 vC;out vec3 vT;
 void main(){float f=mod(aP.w,8.),tl=floor(aP.w/8.);vec2 q=aU;
 vec3 o=f<.5?vec3(1,q.y,q.x):f<1.5?vec3(0,q.y,1.-q.x):f<2.5?vec3(q.x,1,q.y):f<3.5?vec3(q.x,0,q.y):f<4.5?vec3(1.-q.x,q.y,1):vec3(q.x,q.y,0);
 float s=f<1.5?.78:f<2.5?1.:f<3.5?.5:.64;vec2 uv=(f>1.5&&f<3.5)?q:vec2(q.x,1.-q.y);
-vT=(vec2(mod(tl,32.),floor(tl/32.))+uv*.96+.02)/32.;vC=vec4(aC.rgb*s,aC.a);gl_Position=uM*vec4(aP.xyz+o,1);}`;
+vT=vec3(uv,tl);vC=vec4(aC.rgb*s,aC.a);gl_Position=uM*vec4(aP.xyz+o,1);}`;
 const FS=`#version 300 es
-precision mediump float;uniform sampler2D uT;in vec4 vC;in vec2 vT;out vec4 o;void main(){vec4 t=texture(uT,vT);o=vec4(t.rgb*vC.rgb,vC.a);}`;
-const TX={sig:'',imgs:new Map(),tiles:new Map(),tileN:0,avg:{},tav:[],pt:[[0,0,0]],gt:null,src:'gh',ver:'1.21.10',zip:null,zipName:'',ok:0,tot:0};
+precision mediump float;precision mediump sampler2DArray;uniform sampler2DArray uT;in vec4 vC;in vec3 vT;out vec4 o;void main(){vec4 t=texture(uT,vT);o=vec4(min(t.rgb*vC.rgb*1.12,1.),vC.a);}`;
+const TX={sig:'',imgs:new Map(),tiles:new Map(),tileN:0,avg:{},tav:[],pt:[[0,0,0]],gt:null,src:'gh',ver:'1.21.10',zip:null,zipName:'',ok:0,tot:0,pix:[]};
 let prog,uM,uT,qb,sets=[],cam={yaw:.8,pit:.55,dist:100,t:[0,0,0]},dirty=true,lastKey='';
 if(gl){const sh=(t,s)=>{const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o};prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);uM=gl.getUniformLocation(prog,'uM');uT=gl.getUniformLocation(prog,'uT');
  qb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,qb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0,1,0,1,1,0,0,1,1,0,1]),gl.STATIC_DRAW)}
@@ -284,7 +284,7 @@ function mesh(g){const{W,H,L,d,pal}=g,S=W*L,wi=pal.indexOf('minecraft:water'),pt
    nb=[x+1<W?d[k+1]:0,x>0?d[k-1]:0,y+1<H?d[k+S]:0,y>0?d[k-S]:1,z+1<L?d[k+W]:0,z>0?d[k-W]:0];let cs;
    for(let f=0;f<6;f++){const n=nb[f];if(!(n===0||(!isW&&n===wi)))continue;
     if(!pass){isW?nW++:nO++;continue}
-    const t=isW?1:0,i=isW?w++:o++,p=P[t],c=C[t];p[i*4]=x;p[i*4+1]=y;p[i*4+2]=z;p[i*4+3]=f+8*(f===2?pt[b][0]:f===3?pt[b][2]:pt[b][1]);
+    const t=isW?1:0,i=isW?w++:o++,p=P[t],c=C[t];p[i*4]=x;p[i*4+1]=y;p[i*4+2]=z;p[i*4+3]=f+8*pt[b][f];
     if(cs===undefined)cs=isW?255:Math.round(255*(.86+hash(x,y*3+1,z)*.14));
     c[i*4]=cs;c[i*4+1]=cs;c[i*4+2]=cs;c[i*4+3]=isW?170:255}}}
  return{P,C,nO,nW}}
@@ -307,7 +307,7 @@ function mvp(){const a=cv.width/cv.height,p=cam.pit,y=cam.yaw,t=cam.t,D=cam.dist
 function frame(){requestAnimationFrame(frame);if(!gl)return;const w=cv.clientWidth*devicePixelRatio|0,h=cv.clientHeight*devicePixelRatio|0;
  if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;dirty=true}
  if($('auto').checked&&!drag&&G){cam.yaw+=.004;dirty=true}if(!dirty)return;dirty=false;
- gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(prog);gl.uniformMatrix4fv(uM,false,mvp());gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,TX.gt);gl.uniform1i(uT,0);gl.enable(gl.DEPTH_TEST);
+ gl.viewport(0,0,w,h);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);gl.useProgram(prog);gl.uniformMatrix4fv(uM,false,mvp());gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D_ARRAY,TX.gt);gl.uniform1i(uT,0);gl.enable(gl.DEPTH_TEST);
  sets.forEach((s,i)=>{if(!s.n)return;if(i){gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false)}
   gl.bindVertexArray(s.vao);gl.drawArraysInstanced(gl.TRIANGLES,0,6,s.n);if(i){gl.disable(gl.BLEND);gl.depthMask(true)}})}
 let drag=false;const ptr=new Map();let pinch=0;
@@ -437,22 +437,26 @@ async function paintTile(nm,k,idx){const c=document.createElement('canvas');c.wi
  const im=await loadImg(nm);let d;const get=img=>{x.clearRect(0,0,16,16);x.drawImage(img,0,0,img.width,img.width,0,0,16,16);return x.getImageData(0,0,16,16)};
  if(im){d=get(im);const tn=(dd,t)=>{for(let i=0;i<1024;i+=4){dd.data[i]=dd.data[i]*t[0]/255;dd.data[i+1]=dd.data[i+1]*t[1]/255;dd.data[i+2]=dd.data[i+2]*t[2]/255}};
   if(k==='grs'){const ov=await loadImg('grass_block_side_overlay');if(ov){const o=get(ov);tn(o,TINT.g);const t2=document.createElement('canvas');t2.width=t2.height=16;t2.getContext('2d').putImageData(o,0,0);x.putImageData(d,0,0);x.drawImage(t2,0,0);d=x.getImageData(0,0,16,16)}}
-  else if(k)tn(d,TINT[k]);
-  if(/_leaves$/.test(nm)){let r=0,g2=0,b=0,n=0;for(let i=0;i<1024;i+=4)if(d.data[i+3]>=128){r+=d.data[i];g2+=d.data[i+1];b+=d.data[i+2];n++}n=n||1;for(let i=0;i<1024;i+=4)if(d.data[i+3]<128){d.data[i]=r/n*.35;d.data[i+1]=g2/n*.35;d.data[i+2]=b/n*.35;d.data[i+3]=255}}}
+  else if(k==='r'){const o=new ImageData(16,16);for(let yy=0;yy<16;yy++)for(let xx=0;xx<16;xx++)for(let c4=0;c4<4;c4++)o.data[(xx*16+15-yy)*4+c4]=d.data[(yy*16+xx)*4+c4];d=o}else if(k)tn(d,TINT[k]);
+  if(/_leaves$/.test(nm)){let r=0,g2=0,b=0,n=0;for(let i=0;i<1024;i+=4)if(d.data[i+3]>=128){r+=d.data[i];g2+=d.data[i+1];b+=d.data[i+2];n++}n=n||1;for(let i=0;i<1024;i+=4)if(d.data[i+3]<128){d.data[i]=r/n*.5;d.data[i+1]=g2/n*.5;d.data[i+2]=b/n*.5;d.data[i+3]=255}}}
  else{const cc=COL[nm.replace(/_(top|side|bottom)$/,'')]||guess(nm);d=x.createImageData(16,16);for(let i=0;i<1024;i+=4){const j=.9+hash(i,idx,5)*.2;d.data[i]=cc[0]*j;d.data[i+1]=cc[1]*j;d.data[i+2]=cc[2]*j;d.data[i+3]=255}}
  let r=0,g2=0,b=0;for(let i=0;i<1024;i+=4){r+=d.data[i];g2+=d.data[i+1];b+=d.data[i+2]}TX.tav[idx]=[r/256,g2/256,b/256];
- x.putImageData(d,0,0);TX.cx.drawImage(c,(idx%32)*16,Math.floor(idx/32)*16)}
+ TX.pix[idx]=new Uint8Array(d.data)}
 async function ensureTex(g){
  TX.src=$('tsrc').value;TX.ver=$('tver').value;const sig=TX.src+TX.ver+TX.zipName;
- if(sig!==TX.sig){TX.sig=sig;TX.imgs.clear();TX.tiles.clear();TX.tileN=0;TX.avg={};TX.tav=[];TX.ok=0;TX.tot=0;TX.cv=null}
+ if(sig!==TX.sig){TX.sig=sig;TX.imgs.clear();TX.tiles.clear();TX.tileN=0;TX.avg={};TX.tav=[];TX.ok=0;TX.tot=0;TX.pix=[];TX.cv=null}
  if(!TX.cv){TX.cv=document.createElement('canvas');TX.cv.width=TX.cv.height=512;TX.cx=TX.cv.getContext('2d')}
  const fresh=[],T=(nm,k)=>{const key=nm+'|'+k;if(!TX.tiles.has(key)){TX.tiles.set(key,TX.tileN++);fresh.push([nm,k,TX.tiles.get(key)])}return TX.tiles.get(key)};
- TX.pt=g.pal.map((p,i)=>{if(!i)return[0,0,0];const q=texNames(p.replace('minecraft:','').split('[')[0]),k=q.tint||'';return q.tint==='g'?[T(q.t,'g'),T('grass_block_side','grs'),T(q.b,'')]:[T(q.t,k),T(q.s,k),T(q.b,k)]});
+ TX.pt=g.pal.map((p,i)=>{if(!i)return[0,0,0,0,0,0];const n=p.replace('minecraft:','').split('[')[0],ax=(p.match(/axis=(\w)/)||[])[1],q=texNames(n),k=q.tint||'';let t,s,b;
+  if(q.tint==='g'){t=T(q.t,'g');s=T('grass_block_side','grs');b=T(q.b,'')}else{t=T(q.t,k);s=T(q.s,k);b=T(q.b,k)}
+  if(ax&&q.t!==q.s){const r=T(q.s,'r');if(ax==='y')return[s,s,t,t,s,s];if(ax==='x')return[t,t,r,r,r,r];return[r,r,s,s,t,t]}
+  return[s,s,t,b,s,s]});
  if(fresh.length||!TX.gt){if(fresh.length)$('tst').textContent='Lade Texturen …';
   const names=[...new Set(fresh.flatMap(f=>f[1]==='grs'?[f[0],'grass_block_side_overlay']:[f[0]]))],res=await Promise.all(names.map(loadImg));TX.ok+=res.filter(Boolean).length;TX.tot+=names.length;
   for(const[nm,k,idx]of fresh)await paintTile(nm,k,idx);
-  if(gl){if(!TX.gt)TX.gt=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,TX.gt);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,TX.cv);
-   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE)}}
+  if(gl){if(!TX.gt)TX.gt=gl.createTexture();const N=Math.max(1,TX.tileN),buf=new Uint8Array(N*1024);for(let i=0;i<N;i++)if(TX.pix[i])buf.set(TX.pix[i],i*1024);
+   gl.bindTexture(gl.TEXTURE_2D_ARRAY,TX.gt);gl.texImage3D(gl.TEXTURE_2D_ARRAY,0,gl.RGBA8,16,16,N,0,gl.RGBA,gl.UNSIGNED_BYTE,buf);gl.generateMipmap(gl.TEXTURE_2D_ARRAY);
+   gl.texParameteri(gl.TEXTURE_2D_ARRAY,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);gl.texParameteri(gl.TEXTURE_2D_ARRAY,gl.TEXTURE_MAG_FILTER,gl.NEAREST);gl.texParameteri(gl.TEXTURE_2D_ARRAY,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);gl.texParameteri(gl.TEXTURE_2D_ARRAY,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE)}}
  g.pal.forEach((p,i)=>{if(i)TX.avg[p.replace('minecraft:','').split('[')[0]]=TX.tav[TX.pt[i][0]]});
  $('tst').textContent=TX.src==='none'?'Nur Farben':TX.src==='file'&&!TX.zip?'Bitte JAR / Resource-Pack wählen':`${TX.ok}/${TX.tot} Texturen geladen`+(TX.tot&&!TX.ok?' – nicht erreichbar, Farben als Ersatz (Tipp: eigene Minecraft-JAR wählen)':'')}
 $('tsrc').onchange=()=>{const s=$('tsrc').value;$('tvr').classList.toggle('hide',s!=='gh');$('tfr').classList.toggle('hide',s!=='file')};
